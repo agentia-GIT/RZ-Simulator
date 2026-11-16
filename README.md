@@ -1,5 +1,10 @@
 # Network Simulator (Education Network Simulator)
 
+## Version 1.3 — fenêtres adaptatives, groupes lisibles
+
+- Toutes les fenêtres s'adaptent automatiquement à leur contenu et restent centrées/visibles.
+- Les cadres de groupe englobent les objets avec leur étiquette ; le nom du groupe est détaché au-dessus du cadre.
+
 ## Version 1.2 — imprimante réseau, borne Wi-Fi, objets modernisés
 
 - **Imprimante réseau** (menu ☰ → *Bibliothèque d'objets*) : service d'impression RAW/JetDirect sur le port TCP 9100, file d'attente,

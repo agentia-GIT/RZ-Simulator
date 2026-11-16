@@ -39,8 +39,9 @@ var AnimationControls =
 function createControlsWindow()
 {
     AnimationControls.controlsWindow = new UIWindow("controlswindow", "Animation Controls", 200, 50,false,1.0);
-    var pos = AnimationControls.controlsWindow.getPos();
-    AnimationControls.controlsWindow.setPos(pos.x, 70);
+    // Centrée horizontalement (automatique), fixée à 70 px du haut
+    AnimationControls.controlsWindow.setMinWidth(170);
+    AnimationControls.controlsWindow.setPos(null, 70);
 
     var controls = '<img src="img/v3i/minus.svg" alt="'+_("Slow")+'" title="'+_("Slow")+'" onclick="AnimationControls.setSpeed(0.5);" style="width:32px;cursor:pointer;" />';
     controls += '<img src="img/v3i/playpause.svg" alt="'+_("Play/Pause")+'" title="'+_("Play/Pause")+'" onclick="AnimationControls.playPause();" style="width:32px;cursor:pointer;" />';

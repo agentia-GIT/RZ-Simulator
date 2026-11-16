@@ -554,7 +554,7 @@ var Network = function(imgs, context, w, h)
                     groups[host.getGroup()] = data;
                 }
                 var data = groups[host.getGroup()];
-                var rect = host.getDrawable().getRect();
+                var rect = host.getDrawable().getBounds(ctx);
                 if (data.minx > rect.x) 
                 {
                     data.minx = rect.x;
@@ -575,17 +575,33 @@ var Network = function(imgs, context, w, h)
         }
         
         keys = Object.keys(groups);
+        var PAD = 14;      // marge entre les objets (et leur libellé) et le cadre
+        var GAP = 8;       // espace entre le cadre et le nom du groupe
         for (var i = 0; i < keys.length; i++) 
         {
             var data = groups[keys[i]];
-            ctx.strokeStyle = "rgba(0,80,124,0.55)";
+            var fx = data.minx - PAD;
+            var fy = data.miny - PAD;
+            var fw = data.maxx - data.minx + 2 * PAD;
+            var fh = data.maxy - data.miny + 2 * PAD;
+            ctx.save();
+            ctx.strokeStyle = "rgba(0,80,124,0.7)";
             ctx.lineWidth = 2;
             ctx.setLineDash([8, 6]);
-            ctx.strokeRect(data.minx - 10, data.miny - 10, data.maxx - data.minx + 20, data.maxy - data.miny + 20);
+            ctx.strokeRect(fx, fy, fw, fh);
             ctx.setLineDash([]);
-            ctx.font = "600 16px Manrope, 'Open Sans', sans-serif";
+            // Nom du groupe : légèrement détaché, au-dessus du coin haut-gauche du cadre
+            ctx.font = "800 17px Manrope, 'Open Sans', sans-serif";
+            ctx.textBaseline = "bottom";
+            var tw = ctx.measureText(keys[i]).width;
+            var ty = Math.max(fy - GAP, 22);
+            ctx.fillStyle = "rgba(255,255,255,0.9)";
+            ctx.fillRect(fx - 2, ty - 22, tw + 14, 26);
             ctx.fillStyle = "#00507c";
-            ctx.fillText(keys[i], data.minx, data.maxy + 20);
+            ctx.fillRect(fx - 2, ty - 22, 3, 26);
+            ctx.fillStyle = "#003c5d";
+            ctx.fillText(keys[i], fx + 7, ty);
+            ctx.restore();
         }
     }
     

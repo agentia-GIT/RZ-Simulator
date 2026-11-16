@@ -4,6 +4,11 @@ La version (`NetworkSimulator.version` dans `js/Globals.js` et `package.json`) e
 modification ; le bouton **À propos → Vérifier les mises à jour** la compare à la dernière *release* du dépôt
 https://github.com/agentia-GIT/RZ-Simulator.
 
+## 1.3.0
+- Toutes les fenêtres se dimensionnent automatiquement selon leur contenu (plus de hauteur fixe : champs et boutons ne se chevauchent plus) et restent centrées et entièrement visibles, même si le contenu change (ex. fenêtre de l'imprimante) ou si le navigateur est redimensionné.
+- Fenêtres plus lisibles : texte 15 px, libellés en gras alignés, champs plus grands, boutons plus larges, tableaux aérés.
+- Groupes : le cadre en pointillés englobe désormais la totalité des objets **avec leur étiquette** (nom, adresses, état) ; le nom du groupe est légèrement détaché au-dessus du cadre, sur une étiquette.
+
 ## 1.2.0
 - Nouveau jeu d'icônes SVG aux couleurs de v3i.fr (équipements, enveloppes, actions) : `img/v3i/`.
 - Libellés plus lisibles : noms, adresses IP et valeurs en gras et plus grands, sur fond blanc ; texte des messages plus grand.

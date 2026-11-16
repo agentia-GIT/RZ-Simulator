@@ -316,7 +316,7 @@ var DNSServer = function(ifacepos)
     
     this.getAppController = function() 
     {
-        var result = "<table id='dnstable' style='font-size:0.8em;'></table>";
+        var result = "<table id='dnstable' style='font-size:0.95em;'></table>";
         result += "<p>";
         result += "<label for='forwarder'>"+_("Forwarder:")+"</label>";
         var fwderval = (forwarder === null) ? "" : forwarder;

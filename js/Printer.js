@@ -489,8 +489,9 @@ function viewPrinterStatus(id)
         + '<input type="button" value="' + escapeHTML(_("Clear queue")) + '" onclick="printerAction(' + id + ',\'clear\');" />'
         + '<input type="button" value="' + escapeHTML(_("Close")) + '" onclick="closePrinterWindow();" />';
     var w = new UIWindow('divprinter', host.getName(), 580, 540, false, 1.0);
-    w.setContent("<div id='printer_live' style='height:100%;overflow-y:auto;text-align:left;'>" + getPrinterLiveHtml(id) + "</div>");
+    w.setContent("<div id='printer_live' style='text-align:left;'>" + getPrinterLiveHtml(id) + "</div>");
     w.setControls(controls);
+    w.setMinWidth(600);
     w.render();
     printerRefreshTimer = window.setInterval(function() { refreshPrinterWindow(id); }, 400);
 }
@@ -529,7 +530,7 @@ function viewPrintDialog(id)
     var client = host.getApp("PrintClient");
     var printers = network.getElements().filter(function(e) { return e.getType() === "printer"; });
     var html = "<div style='text-align:left;'>";
-    html += "<p><label for='print_target'>" + escapeHTML(_("Printer:")) + "</label><br/>";
+    html += "<p><label class='ns-stack' for='print_target'>" + escapeHTML(_("Printer:")) + "</label><br/>";
     html += "<select id='print_target' style='width:100%;' onchange='document.getElementById(\"print_manual\").value=this.value;'>";
     html += "<option value=''>" + escapeHTML(_("-- choose a printer --")) + "</option>";
     for (var i = 0; i < printers.length; i++)
@@ -541,9 +542,9 @@ function viewPrintDialog(id)
         }
     }
     html += "</select></p>";
-    html += "<p><label for='print_manual'>" + escapeHTML(_("IP address or name:")) + "</label><br/><input type='text' id='print_manual' style='width:95%;' /></p>";
-    html += "<p><label for='print_doc'>" + escapeHTML(_("Document:")) + "</label><br/><input type='text' id='print_doc' value='document.pdf' maxlength='40' style='width:95%;' /></p>";
-    html += "<p><label for='print_pages'>" + escapeHTML(_("Pages:")) + "</label> <input type='text' id='print_pages' value='1' size='4' /></p>";
+    html += "<p><label class='ns-stack' for='print_manual'>" + escapeHTML(_("IP address or name:")) + "</label><input type='text' id='print_manual' style='width:100%;' /></p>";
+    html += "<p><label class='ns-stack' for='print_doc'>" + escapeHTML(_("Document:")) + "</label><input type='text' id='print_doc' value='document.pdf' maxlength='40' style='width:100%;' /></p>";
+    html += "<p><label class='ns-stack' for='print_pages'>" + escapeHTML(_("Pages:")) + "</label> <input type='text' id='print_pages' value='1' size='4' /></p>";
     html += "<div id='printclient_status' class='ns-status'></div></div>";
     var controls = '<input type="button" value="' + escapeHTML(_("Print")) + '" onclick="doPrint(' + id + ');" />'
         + '<input type="button" value="' + escapeHTML(_("Close")) + '" onclick="closePrintDialog();" />';

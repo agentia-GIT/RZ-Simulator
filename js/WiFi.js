@@ -45,16 +45,16 @@ function editWifiSettings(id)
     var host = network.getElement(id);
     var w = host.getWifi();
     var html = "<div style='text-align:left;'>";
-    html += "<p><label><input type='checkbox' id='wifi_enabled'" + (w.enabled ? " checked='checked'" : "") + " /> <b>" + escapeHTML(_("Wi-Fi enabled")) + "</b></label></p>";
-    html += "<p><label for='wifi_ssid'>" + escapeHTML(_("Network name (SSID):")) + "</label><br/><input type='text' id='wifi_ssid' maxlength='32' style='width:95%;' value='" + escapeHTML(w.ssid) + "' /></p>";
-    html += "<p><label for='wifi_security'>" + escapeHTML(_("Security:")) + "</label><br/><select id='wifi_security' onchange='wifiSecurityChanged();'>";
+    html += "<p><label class='ns-stack'><input type='checkbox' id='wifi_enabled'" + (w.enabled ? " checked='checked'" : "") + " /> <b>" + escapeHTML(_("Wi-Fi enabled")) + "</b></label></p>";
+    html += "<p><label class='ns-stack' for='wifi_ssid'>" + escapeHTML(_("Network name (SSID):")) + "</label><input type='text' id='wifi_ssid' maxlength='32' style='width:100%;' value='" + escapeHTML(w.ssid) + "' /></p>";
+    html += "<p><label class='ns-stack' for='wifi_security'>" + escapeHTML(_("Security:")) + "</label><select id='wifi_security' onchange='wifiSecurityChanged();'>";
     html += "<option value='open'" + (w.security === "open" ? " selected='selected'" : "") + ">" + escapeHTML(_("Open (no password)")) + "</option>";
     html += "<option value='wpa2'" + (w.security === "wpa2" ? " selected='selected'" : "") + ">WPA2-Personal</option>";
     html += "<option value='wpa3'" + (w.security === "wpa3" ? " selected='selected'" : "") + ">WPA3-Personal</option></select></p>";
-    html += "<p><label for='wifi_key'>" + escapeHTML(_("Password (8 to 63 characters):")) + "</label><br/><input type='text' id='wifi_key' maxlength='63' style='width:95%;' value='" + escapeHTML(w.key) + "'" + (w.security === "open" ? " disabled='disabled'" : "") + " /></p>";
-    html += "<p><label for='wifi_band'>" + escapeHTML(_("Band:")) + "</label> <select id='wifi_band' onchange='wifiBandChanged();'>";
+    html += "<p><label class='ns-stack' for='wifi_key'>" + escapeHTML(_("Password (8 to 63 characters):")) + "</label><input type='text' id='wifi_key' maxlength='63' style='width:100%;' value='" + escapeHTML(w.key) + "'" + (w.security === "open" ? " disabled='disabled'" : "") + " /></p>";
+    html += "<p><label class='ns-stack' for='wifi_band'>" + escapeHTML(_("Band:")) + "</label> <select id='wifi_band' onchange='wifiBandChanged();'>";
     html += "<option value='2.4'" + (w.band === "2.4" ? " selected='selected'" : "") + ">2,4 GHz</option><option value='5'" + (w.band === "5" ? " selected='selected'" : "") + ">5 GHz</option></select> ";
-    html += "<label for='wifi_channel'>" + escapeHTML(_("Channel")) + "</label> <select id='wifi_channel'>" + wifiChannelOptions(w.band, w.channel) + "</select></p>";
+    html += "<label class='ns-stack' for='wifi_channel'>" + escapeHTML(_("Channel")) + "</label> <select id='wifi_channel'>" + wifiChannelOptions(w.band, w.channel) + "</select></p>";
     html += "<p style='font-size:.85em;color:#495057;'>" + escapeHTML(_("The access point bridges its Wi-Fi stations to its wired LAN port. Up to 8 stations.")) + "</p>";
     html += "</div>";
     var controls = '<input type="button" value="' + escapeHTML(_("Save")) + '" onclick="saveWifiSettings(' + id + ');" />'
@@ -150,8 +150,8 @@ function editWifiClient(id)
     var host = network.getElement(id);
     var w = host.getWifi();
     var html = "<div style='text-align:left;'>";
-    html += "<p><label for='wificl_ssid'>" + escapeHTML(_("Network name (SSID):")) + "</label><br/><input type='text' id='wificl_ssid' maxlength='32' style='width:95%;' value='" + escapeHTML(w.ssid) + "' /></p>";
-    html += "<p><label for='wificl_key'>" + escapeHTML(_("Password:")) + "</label><br/><input type='text' id='wificl_key' maxlength='63' style='width:95%;' value='" + escapeHTML(w.key) + "' /></p>";
+    html += "<p><label class='ns-stack' for='wificl_ssid'>" + escapeHTML(_("Network name (SSID):")) + "</label><input type='text' id='wificl_ssid' maxlength='32' style='width:100%;' value='" + escapeHTML(w.ssid) + "' /></p>";
+    html += "<p><label class='ns-stack' for='wificl_key'>" + escapeHTML(_("Password:")) + "</label><input type='text' id='wificl_key' maxlength='63' style='width:100%;' value='" + escapeHTML(w.key) + "' /></p>";
     html += "<p style='font-size:.85em;color:#495057;'>" + escapeHTML(_("Then create a link between this device and a Wi-Fi slot of an access point.")) + "</p>";
     html += "</div>";
     var controls = '<input type="button" value="' + escapeHTML(_("Save")) + '" onclick="saveWifiClient(' + id + ');" />'

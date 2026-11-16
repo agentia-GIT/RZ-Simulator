@@ -327,19 +327,19 @@ var HTTPServer = function(ifacepos)
     
     this.getAppController1 = function() 
     {
-        var result = "<table id='httptable' style='font-size:0.8em;'></table>";
+        var result = "<table id='httptable' style='font-size:0.95em;'></table>";
         return result;
     };
     
     this.getAppController2 = function() 
     {
-        var result = "<table id='httpfiletable' style='font-size:0.8em;'></table>";
+        var result = "<table id='httpfiletable' style='font-size:0.95em;'></table>";
         return result;
     };
     
     this.getAppController3 = function(contents) 
     {
-        var result = "<textarea id='httpcontents' style='font-size:0.8em;width:100%;height:100px;'>";
+        var result = "<textarea id='httpcontents' style='font-size:0.95em;width:100%;height:100px;'>";
         result += escapeHTML(contents);
         result += "</textarea>";
         return result;

@@ -26,6 +26,13 @@ var UIWindow = function(windowid, title, w, h, scrollable, opacity)
     var h = h;
     var x = window.innerWidth / 2 - w / 2;
     var y = window.innerHeight / 2 - h / 2;
+    // Dimensionnement automatique : la fenêtre s'adapte à son contenu. Les valeurs w et h
+    // ne servent que d'indication de largeur minimale. Tant que l'utilisateur ou le code
+    // n'impose pas de position, la fenêtre reste centrée.
+    var autoX = true;
+    var autoY = true;
+    var minWidth = Math.max(300, Math.min(w, 720));
+    var observer = null;
     var opacity = opacity;
     var scrollable = scrollable;
     var windowid = windowid;
@@ -92,6 +99,8 @@ var UIWindow = function(windowid, title, w, h, scrollable, opacity)
                         }
                         x = evt_x - click_offset_x + getPageScrollX();
                         y = evt_y - click_offset_y + getPageScrollY();
+                        autoX = false;
+                        autoY = false;
                         outerdiv.setAttribute('style', getOuterStyle());
                         break;
                 }
@@ -113,7 +122,47 @@ var UIWindow = function(windowid, title, w, h, scrollable, opacity)
     function getOuterStyle()
     {
         // L'apparence (couleurs, bordures, ombre) est dans css/theme.css (classe ns-window)
-        return 'top:' + y + 'px;left:' + x + 'px;width:' + w + 'px;height:' + h + 'px;opacity:' + opacity + ';';
+        return 'top:' + y + 'px;left:' + x + 'px;min-width:' + minWidth + 'px;opacity:' + opacity + ';';
+    }
+
+    // Recentre (axes automatiques) et garde la fenêtre entièrement visible
+    function layout()
+    {
+        if (outerdiv === null || !outerdiv.parentNode)
+        {
+            return;
+        }
+        var ow = outerdiv.offsetWidth;
+        var oh = outerdiv.offsetHeight;
+        var sx = getPageScrollX();
+        var sy = getPageScrollY();
+        var nx = x;
+        var ny = y;
+        if (autoX)
+        {
+            nx = sx + (window.innerWidth - ow) / 2;
+        }
+        if (autoY)
+        {
+            ny = sy + (window.innerHeight - oh) / 2;
+        }
+        // Reste dans la zone visible (au moins la barre de titre accessible)
+        nx = Math.max(sx + 4, Math.min(nx, sx + window.innerWidth - ow - 4));
+        ny = Math.max(sy + 4, Math.min(ny, sy + window.innerHeight - oh - 4));
+        nx = Math.round(nx);
+        ny = Math.round(ny);
+        if (nx !== x || ny !== y)
+        {
+            x = nx;
+            y = ny;
+            outerdiv.style.left = x + 'px';
+            outerdiv.style.top = y + 'px';
+        }
+    }
+
+    function onViewportResize()
+    {
+        layout();
     }
 
     function init() 
@@ -130,13 +179,12 @@ var UIWindow = function(windowid, title, w, h, scrollable, opacity)
         
         contentDiv = document.createElement("div");
         contentDiv.setAttribute('id', contentid);
-        // Correction : 'height:' + h - 80 donnait NaN (concaténation de chaînes avant la soustraction)
-        contentDiv.setAttribute('style', 'width:100%; height:' + (h - 80) + 'px;');
+        contentDiv.setAttribute('class', 'ns-window-content');
         
         controlsDiv = document.createElement("div");
         controlsDiv.setAttribute('id', controlsid);
         controlsDiv.setAttribute('class', 'ns-window-controls');
-        controlsDiv.setAttribute('style', 'width:100%; height:40px;');
+
         
         //var bkdiv = document.getElementById('divbk');
         window.addEventListener("mousedown", windowMouseDownEvent, true);
@@ -154,16 +202,37 @@ var UIWindow = function(windowid, title, w, h, scrollable, opacity)
         outerdiv.appendChild(controlsDiv);
         
         document.body.appendChild(outerdiv);
+        layout();
+        window.addEventListener("resize", onViewportResize);
+        // Redimensionne la fenêtre quand son contenu change (ex. tableaux qui se remplissent)
+        if (typeof ResizeObserver !== "undefined")
+        {
+            observer = new ResizeObserver(function() { layout(); });
+            observer.observe(outerdiv);
+        }
     };
     
     this.setControls = function(controls) 
     {
         controlsDiv.innerHTML = controls;
+        layout();
     };
     
     this.setContent = function(content) 
     {
         contentDiv.innerHTML = content;
+        layout();
+    };
+
+    // Largeur minimale souhaitée (la fenêtre peut grandir au-delà selon son contenu)
+    this.setMinWidth = function(mw)
+    {
+        minWidth = mw;
+        if (outerdiv !== null)
+        {
+            outerdiv.style.minWidth = mw + 'px';
+            layout();
+        }
     };
 
     this.dispose = function()
@@ -177,6 +246,12 @@ var UIWindow = function(windowid, title, w, h, scrollable, opacity)
         window.removeEventListener("mousedown", windowMouseDownEvent, true);
         window.removeEventListener("mouseup", windowMouseUpEvent, true);
         window.removeEventListener("mousemove", windowMouseMoveEvent, true);
+        window.removeEventListener("resize", onViewportResize);
+        if (observer !== null)
+        {
+            observer.disconnect();
+            observer = null;
+        }
         uimanager.removeWindow(this);
         removeBodyDiv(windowid);
         uitranslation.removeObserver(this);
@@ -190,14 +265,28 @@ var UIWindow = function(windowid, title, w, h, scrollable, opacity)
 
     this.getPos = function()
     {
+        layout();
         return {x: x, y: y};
     };
 
+    // nx / ny à null : l'axe reste centré automatiquement
     this.setPos = function(nx, ny)
     {
-        x = nx;
-        y = ny;
-        outerdiv.setAttribute('style', getOuterStyle());
+        if (nx !== null)
+        {
+            x = nx;
+            autoX = false;
+        }
+        if (ny !== null)
+        {
+            y = ny;
+            autoY = false;
+        }
+        if (outerdiv !== null)
+        {
+            outerdiv.setAttribute('style', getOuterStyle());
+            layout();
+        }
     };
 
     this.localeChanged = function()

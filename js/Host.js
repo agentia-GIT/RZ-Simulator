@@ -90,7 +90,7 @@ function createDiagnosticsDiv(id)
     innerHTML += '<input type="button" id="ping" value="'+_("Ping")+'" onclick="diagnosticsPing('+id+')" />';
     innerHTML += '<input type="button" id="traceroute" value="'+_("Trace Route")+'" onclick="diagnosticsTraceroute('+id+')" />';
     innerHTML += '</p>';
-    innerHTML += '<div style="width:100%;height:250px;text-align:left;font-size:0.8em;font-style:italic;overflow-y:scroll;" id="diagnosticsconsole" >';
+    innerHTML += '<div style="width:100%;height:250px;text-align:left;font-size:0.95em;font-style:italic;overflow-y:scroll;" id="diagnosticsconsole" >';
     innerHTML += host.getConnectable().getTrafficManager().getDiagnosticsInfo();
     innerHTML += '</div>';
     var controls = '<p><input type="button" id="cancel" value="'+_("Exit")+'" onclick="cancelDiagnostics();" /></p>';
@@ -153,7 +153,7 @@ function createNATDiv(id)
         innerHTML += "<label for='performNAT'>"+_("Gateway mode (uses NAT).")+"</label>";
         innerHTML += "</p>";
     }
-    innerHTML += '<table id="nattable" style="font-size:0.8em;width:100%;"></table>';
+    innerHTML += '<table id="nattable" style="font-size:0.95em;width:100%;"></table>';
     var controls = '<p>\
   <input type="button" id="upload" value="'+_("Save")+'" onclick="saveNATConfig(' + id + ',\''+uinattable.getId()+'\');" />\
   <input type="button" id="cancel" value="'+_("Cancel")+'" onclick="cancelNATConfig(\''+uinattable.getId()+'\');" />\

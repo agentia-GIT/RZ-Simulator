@@ -82,21 +82,24 @@ var Drawable = function(c_owner)
         notifyObservers();
     };
     
-    // Libellé sous l'équipement : nom en gras (plus grand), puis adresses et valeurs en gras,
-    // sur un fond blanc translucide pour une lecture facile.
-    function drawInfo(ctx)
+    var NAME_FONT = "800 15px Manrope, 'Open Sans', Arial, sans-serif";
+    var LINE_FONT = "700 13px 'Open Sans', Arial, sans-serif";
+    var LINE_H = 18;
+
+    function getInfoParts()
     {
         var parts = owner.getStrInfo().split("\n");
         if (DEBUG)
         {
             parts.push("X: " + X + " - Y: " + Y);
         }
-        var NAME_FONT = "800 15px Manrope, 'Open Sans', Arial, sans-serif";
-        var LINE_FONT = "700 13px 'Open Sans', Arial, sans-serif";
-        var LINE_H = 18;
-        var cx = image.width / 2;
-        var top = image.height + 4;
+        return parts;
+    }
 
+    // Mesure le cadre du libellé (coordonnées relatives au coin haut-gauche de l'image)
+    function measureInfo(ctx, parts)
+    {
+        ctx.save();
         ctx.textBaseline = "top";
         ctx.textAlign = "center";
         var width = 0;
@@ -105,17 +108,48 @@ var Drawable = function(c_owner)
             ctx.font = (i === 0) ? NAME_FONT : LINE_FONT;
             width = Math.max(width, ctx.measureText(parts[i]).width);
         }
+        ctx.restore();
         var boxW = width + 14;
         var boxH = parts.length * LINE_H + 6;
+        var cx = image.width / 2;
+        var top = image.height + 4;
+        return {cx: cx, top: top, boxX: cx - boxW / 2, boxY: top - 2, boxW: boxW, boxH: boxH};
+    }
+
+    // Rectangle englobant l'équipement ET son libellé (coordonnées du canvas)
+    this.getBounds = function(ctx)
+    {
+        var r = this.getRect();
+        if (image === null || !ctx)
+        {
+            return r;
+        }
+        var m = measureInfo(ctx, getInfoParts());
+        var minx = Math.min(0, m.boxX);
+        var miny = 0;
+        var maxx = Math.max(image.width, m.boxX + m.boxW);
+        var maxy = Math.max(image.height, m.boxY + m.boxH);
+        return {x: X + minx, y: Y + miny, width: maxx - minx, height: maxy - miny};
+    };
+
+    // Libellé sous l'équipement : nom en gras (plus grand), puis adresses et valeurs en gras,
+    // sur un fond blanc translucide pour une lecture facile.
+    function drawInfo(ctx)
+    {
+        var parts = getInfoParts();
+        var m = measureInfo(ctx, parts);
+
+        ctx.textBaseline = "top";
+        ctx.textAlign = "center";
         ctx.fillStyle = "rgba(255,255,255,0.92)";
-        ctx.fillRect(cx - boxW / 2, top - 2, boxW, boxH);
+        ctx.fillRect(m.boxX, m.boxY, m.boxW, m.boxH);
         ctx.fillStyle = "#00507c";
-        ctx.fillRect(cx - boxW / 2, top - 2, 3, boxH);
+        ctx.fillRect(m.boxX, m.boxY, 3, m.boxH);
         for (var j = 0; j < parts.length; j++)
         {
             ctx.font = (j === 0) ? NAME_FONT : LINE_FONT;
             ctx.fillStyle = (j === 0) ? "#003c5d" : "#000001";
-            ctx.fillText(parts[j], cx + 1, top + 2 + j * LINE_H);
+            ctx.fillText(parts[j], m.cx + 1, m.top + 2 + j * LINE_H);
         }
         ctx.textAlign = "left";
         ctx.textBaseline = "alphabetic";

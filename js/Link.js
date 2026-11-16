@@ -41,7 +41,7 @@ function createLinkConnectorsDiv(id1, id2)
     
     div.setAttribute('style', 'position:absolute;top:' + t + 'px;left:' + l + 'px;z-index:110;background-color:white;width:400px;height:400px;border-radius:10px;border:1px solid;padding:10px;text-align:center;');
     div.setAttribute('id', 'divlinkconnectors');*/
-    var html = '<table style="font-size:0.8em;">';
+    var html = '<table style="font-size:0.95em;">';
     html += '<tr><th>'+escapeHTML(host1.getName())+'</th><th>'+escapeHTML(host2.getName())+'</th></tr>';
     html += '<tr>';
     html += '<td>';

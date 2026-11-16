@@ -29,6 +29,7 @@ function viewWebBrowser(id)
     var w = new UIWindow('divhttpclient','HTTP Client (Browser)',400,400,false,1.0);
     w.setContent(app.getAppController());
     w.setControls(controls);
+    w.setMinWidth(560);
     w.render();
 }
 
@@ -180,7 +181,7 @@ var HTTPClient = function(ifacepos)
         result += "<img src='img/v3i/right-arrow.svg' style='height:1em;' />";
         result += "</a>";
         result += "</p>";
-        result += "<div id='httpbrowsercontents' style='font-style:italic;overflow:scroll;text-align:left;min-height:300px;'>";
+        result += "<div id='httpbrowsercontents' style='font-style:italic;overflow:auto;text-align:left;min-height:200px;max-height:45vh;'>";
         result += this.getBrowserContents();
         result += "</div>";
         return result;
