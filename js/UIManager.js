@@ -26,14 +26,47 @@ function createBkDiv()
     document.body.appendChild(div);
 }
 
-function saveNetwork()
+// Destination choisie avec « Parcourir » (API File System Access : Chrome, Edge...)
+var saveFileHandle = null;
+
+function canBrowseFolders()
 {
-    var filename = document.getElementById('filename').value.trim();
-    if (filename === "")
+    return (typeof window.showSaveFilePicker === "function");
+}
+
+function browseSaveLocation()
+{
+    if (!canBrowseFolders())
     {
-        filename = "network.json";
+        alert(_("Your browser cannot choose a folder from here: the file goes to your downloads folder. In Firefox, enable \u00ab Always ask you where to save files \u00bb in Settings > General > Downloads."));
+        return;
     }
-    var blob = new Blob([network.save()], {type: "application/json;charset=utf-8"});
+    var input = document.getElementById('filename');
+    var wanted = (input && input.value.trim() !== "") ? input.value.trim() : "network.json";
+    window.showSaveFilePicker({
+        suggestedName: wanted,
+        types: [{description: "JSON", accept: {"application/json": [".json"]}}]
+    }).then(function(handle)
+    {
+        saveFileHandle = handle;
+        if (input)
+        {
+            input.value = handle.name;
+        }
+        var info = document.getElementById('savedest');
+        if (info)
+        {
+            info.textContent = _("Destination chosen:") + " " + handle.name;
+        }
+    }).catch(function()
+    {
+        // Annulé par l'utilisateur : rien à faire
+    });
+}
+
+function downloadViaLink(filename, text)
+{
+    var blob = new Blob([text], {type: "application/json;charset=utf-8"});
     var url = URL.createObjectURL(blob);
     var download = document.createElement("a");
     download.setAttribute('href', url);
@@ -44,6 +77,32 @@ function saveNetwork()
     document.body.removeChild(download);
     // Libération différée de l'URL (Firefox démarre le téléchargement de façon asynchrone)
     setTimeout(function() { URL.revokeObjectURL(url); }, 10000);
+}
+
+function saveNetwork()
+{
+    var filename = document.getElementById('filename').value.trim();
+    if (filename === "")
+    {
+        filename = "network.json";
+    }
+    var text = network.save();
+    if ((saveFileHandle !== null) && (saveFileHandle.name === filename))
+    {
+        var handle = saveFileHandle;
+        handle.createWritable().then(function(stream)
+        {
+            return stream.write(text).then(function() { return stream.close(); });
+        }).catch(function()
+        {
+            // Écriture impossible (permission refusée...) : on retombe sur le téléchargement classique
+            downloadViaLink(filename, text);
+        });
+    }
+    else
+    {
+        downloadViaLink(filename, text);
+    }
     cancelDownload();
 }
 
@@ -64,6 +123,7 @@ function cancelUpload()
 
 function cancelDownload()
 {
+    saveFileHandle = null;
     uimanager.getWindow("divdownload").dispose();
     removeBodyDiv('divbk');
 }
@@ -121,13 +181,16 @@ function createUploadDiv()
 function createDownloadDiv()
 {
     var div = document.createElement("div");
+    saveFileHandle = null;
     var innerHTML = '<p><label for="filename">'+_("File name:")+'</label> <input type="text" id="filename" name="filename" value="network.json" /></p>';
+    innerHTML += '<p class="ns-hint" id="savedest">' + escapeHTML(canBrowseFolders() ? _("Use Browse to choose the folder.") : _("The file goes to your browser's downloads folder.")) + '</p>';
     var controls = '<p>\
-  <input type="button" id="upload" value="'+_("Download")+'" onclick="saveNetwork();" />\
+  <input type="button" id="upload" value="'+_("Save to file")+'" onclick="saveNetwork();" />\
+  <input type="button" id="browse" value="'+_("Browse...")+'" onclick="browseSaveLocation();" />\
   <input type="button" id="cancel" value="'+_("Cancel")+'" onclick="cancelDownload();" />\
   </p>';
     //document.body.appendChild(div);
-    var w = new UIWindow('divdownload', _('Download file'), 400, 150, false, 1.0);
+    var w = new UIWindow('divdownload', _('Save file'), 400, 150, false, 1.0);
     w.setContent(innerHTML);
     w.setControls(controls);
     w.render();
@@ -202,6 +265,7 @@ var UIManager = function()
         canvas.addEventListener("mousemove", mouseMoveEvent, false);
         var bbox = canvas.getBoundingClientRect();
 
+        createHeader();
         mainmenu = new UIMenu("Menu", 8 + bbox.left, HEADER_HEIGHT, true);
 
         // Gestion : sauvegarde et restauration du réseau
@@ -276,8 +340,9 @@ var UIManager = function()
         var canvas = document.getElementById("simcanvas");
         // THANK_YOU: http://www.informit.com/articles/article.aspx?p=1903884&seqNum=6
         var bbox = canvas.getBoundingClientRect();
-        var canvas_x = (event.clientX - bbox.left) * (canvas.width / bbox.width);
-        var canvas_y = (event.clientY - bbox.top) * (canvas.height / bbox.height);
+        var z = network.getZoom();
+        var canvas_x = (event.clientX - bbox.left) * (canvas.width / bbox.width) / z;
+        var canvas_y = (event.clientY - bbox.top) * (canvas.height / bbox.height) / z;
 
         dispatchEvent(canvas_x, canvas_y, ACTION_MOUSE_DOWN);
     }
@@ -287,8 +352,9 @@ var UIManager = function()
         var canvas = document.getElementById("simcanvas");
         // THANK_YOU: http://www.informit.com/articles/article.aspx?p=1903884&seqNum=6
         var bbox = canvas.getBoundingClientRect();
-        var canvas_x = (event.clientX - bbox.left) * (canvas.width / bbox.width);
-        var canvas_y = (event.clientY - bbox.top) * (canvas.height / bbox.height);
+        var z = network.getZoom();
+        var canvas_x = (event.clientX - bbox.left) * (canvas.width / bbox.width) / z;
+        var canvas_y = (event.clientY - bbox.top) * (canvas.height / bbox.height) / z;
 
         dispatchEvent(canvas_x, canvas_y, ACTION_MOUSE_UP);
     }
@@ -298,10 +364,27 @@ var UIManager = function()
         var canvas = document.getElementById("simcanvas");
         // THANK_YOU: http://www.informit.com/articles/article.aspx?p=1903884&seqNum=6
         var bbox = canvas.getBoundingClientRect();
-        var canvas_x = (event.clientX - bbox.left) * (canvas.width / bbox.width);
-        var canvas_y = (event.clientY - bbox.top) * (canvas.height / bbox.height);
+        var z = network.getZoom();
+        var canvas_x = (event.clientX - bbox.left) * (canvas.width / bbox.width) / z;
+        var canvas_y = (event.clientY - bbox.top) * (canvas.height / bbox.height) / z;
         move_X = canvas_x;
         move_Y = canvas_y;
+        // Pendant le déplacement d'un objet, on fait défiler la page quand on approche du bord de la fenêtre
+        if (state === STATE_ELEMENT_SELECTED_MOUSE_DOWN)
+        {
+            var EDGE = 40;
+            var STEP = 24;
+            var dx = 0;
+            var dy = 0;
+            if (event.clientX > window.innerWidth - EDGE) { dx = STEP; }
+            else if (event.clientX < EDGE) { dx = -STEP; }
+            if (event.clientY > window.innerHeight - EDGE) { dy = STEP; }
+            else if (event.clientY < EDGE + HEADER_HEIGHT) { dy = -STEP; }
+            if ((dx !== 0) || (dy !== 0))
+            {
+                window.scrollBy(dx, dy);
+            }
+        }
 
         dispatchEvent(canvas_x, canvas_y, ACTION_MOUSE_MOVE);
     }
@@ -523,7 +606,7 @@ var UIManager = function()
                         state = STATE_ELEMENT_SELECTED_MOUSE_UP;
                         break;
                     case ACTION_MOUSE_MOVE:
-                        network.getSelected().getDrawable().setPosition(X - click_offset_x, Y - click_offset_y);
+                        network.getSelected().getDrawable().setPosition(Math.max(0, X - click_offset_x), Math.max(0, Y - click_offset_y));
                         break;
                 }
                 break;
@@ -864,40 +947,70 @@ var UIManager = function()
         }
     };
 
-    // Bandeau d'en-tête (style v3i : fond blanc, filet bleu) et bouton burger bleu
-    function renderMainMenu(ctx)
+    // En-tête (style v3i : fond blanc, filet bleu) : élément HTML fixe, indépendant du zoom et du défilement
+    var headerEl = null;
+    var headerSubEl = null;
+    var burgerEl = null;
+    var lastSub = null;
+
+    function createHeader()
     {
-        var scrollY = getPageScrollY() * (window.devicePixelRatio || 1);
-        var scrollX = getPageScrollX() * (window.devicePixelRatio || 1);
-        var bandW = Math.max(canvas.width, 1);
-
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, scrollY, bandW, HEADER_HEIGHT);
-        ctx.fillStyle = "#00507c";
-        ctx.fillRect(0, scrollY + HEADER_HEIGHT - 3, bandW, 3);
-
-        // Bouton burger (zone cliquable : voir UIRectangle ci-dessus)
-        var open = (mainmenu !== null) && mainmenu.getVisible();
-        ctx.fillStyle = open ? "#003c5d" : "#00507c";
-        ctx.fillRect(BURGER_X, scrollY + BURGER_Y, BURGER_SIZE, BURGER_SIZE);
-        ctx.fillStyle = "#ffffff";
-        for (var i = 0; i < 3; i++)
+        if (document.getElementById("nsheader") !== null)
         {
-            ctx.fillRect(BURGER_X + 9, scrollY + BURGER_Y + 11 + i * 8, BURGER_SIZE - 18, 3);
+            return;
         }
-
-        // Titre : visible dans la fenêtre même si la page est défilée horizontalement
-        var tx = scrollX + BURGER_X + BURGER_SIZE + 16;
-        ctx.textBaseline = "alphabetic";
-        ctx.fillStyle = "#00507c";
-        ctx.font = "700 22px Manrope, 'Open Sans', Arial, sans-serif";
-        var title = "Network Simulator";
-        ctx.fillText(title, tx, scrollY + 29);
-        var tw = ctx.measureText(title).width;
-        ctx.font = "italic 400 12px 'Open Sans', Arial, sans-serif";
-        ctx.fillStyle = "#495057";
-        ctx.fillText(_("Educational network simulator") + "  \u2022  v" + NetworkSimulator.version, tx, scrollY + 46);
+        headerEl = document.createElement("div");
+        headerEl.setAttribute("id", "nsheader");
+        burgerEl = document.createElement("button");
+        burgerEl.setAttribute("id", "nsburger");
+        burgerEl.setAttribute("type", "button");
+        burgerEl.setAttribute("aria-label", "Menu");
+        burgerEl.innerHTML = "<span></span><span></span><span></span>";
+        burgerEl.addEventListener("click", function() { _self.burgerClicked(); });
+        var box = document.createElement("div");
+        box.setAttribute("class", "ns-hd-box");
+        var title = document.createElement("div");
+        title.setAttribute("class", "ns-hd-title");
+        title.textContent = "Network Simulator";
+        headerSubEl = document.createElement("div");
+        headerSubEl.setAttribute("class", "ns-hd-sub");
+        box.appendChild(title);
+        box.appendChild(headerSubEl);
+        headerEl.appendChild(burgerEl);
+        headerEl.appendChild(box);
+        document.body.appendChild(headerEl);
     }
+
+    // Un clic sur le burger = appui + relâchement sur la zone du burger (même chemin que l'ancien clic canvas)
+    this.burgerClicked = function()
+    {
+        var dpr = window.devicePixelRatio || 1;
+        var cx = (BURGER_X + BURGER_SIZE / 2) * dpr + getPageScrollX() * dpr;
+        var cy = (BURGER_Y + BURGER_SIZE / 2) * dpr + getPageScrollY() * dpr;
+        dispatchEvent(cx, cy, ACTION_MOUSE_DOWN);
+        dispatchEvent(cx, cy, ACTION_MOUSE_UP);
+    };
+
+    this.updateHeader = function()
+    {
+        if (headerSubEl === null)
+        {
+            return;
+        }
+        var sub = _("Educational network simulator") + "  \u2022  v" + NetworkSimulator.version;
+        if (sub !== lastSub)
+        {
+            headerSubEl.textContent = sub;
+            lastSub = sub;
+        }
+        var open = (mainmenu !== null) && mainmenu.getVisible();
+        burgerEl.className = open ? "ns-open" : "";
+    };
+
+    this.hideMenus = function()
+    {
+        hideAllMenus();
+    };
 
     function renderSelected(ctx)
     {
@@ -946,7 +1059,6 @@ var UIManager = function()
     {
         renderSelected(ctx);
         renderCreatingLink(ctx);
-        renderMainMenu(ctx);
     };
     
     this.getMousePos = function()

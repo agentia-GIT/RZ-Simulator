@@ -25,13 +25,14 @@
   --ns-shadow:0 6px 24px rgba(0,0,0,.22);
 }
 
-html,body{margin:0;padding:0;width:2048px;font-family:var(--ns-font-body);color:var(--ns-text);background:var(--ns-grey);}
+html,body{margin:0;padding:0;font-family:var(--ns-font-body);color:var(--ns-text);background:var(--ns-grey);}
 table{border:1px solid var(--ns-grey-line);border-collapse:collapse;width:100%;}
 td,th{border:1px solid var(--ns-grey-line);padding:2px 4px;}
 th{background:var(--ns-grey);font-family:var(--ns-font-head);font-weight:600;}
 fieldset{font-size:.8em;border:1px solid var(--ns-grey-line);}
 legend{font-family:var(--ns-font-head);color:var(--ns-primary);font-weight:600;}
-#simcanvas{display:block;width:2048px;height:1024px;user-select:none;-moz-user-select:none;}
+#simcontainer{display:block;width:max-content;}
+#simcanvas{display:block;user-select:none;-moz-user-select:none;}
 #simcontainer{user-select:none;-moz-user-select:none;}
 input[type="text"],select,textarea{font-family:inherit;border:1px solid #ced4da;border-radius:0;padding:3px 5px;}
 input[type="text"]:focus,select:focus,textarea:focus{outline:2px solid var(--ns-accent);outline-offset:0;border-color:var(--ns-primary);}
@@ -111,3 +112,22 @@ a{color:var(--ns-primary);}
 .ns-port.ns-port-off{background:#b3261e;border-color:#8c1d18;color:#fff;}
 .ns-port:hover{outline:2px solid var(--ns-accent);}
 .ns-hint{margin:2px 0 6px;font-size:.85em;color:#555;}
+
+/* ---------- Fenêtres compactes (contrôles d'animation et de zoom) ---------- */
+.ns-window.ns-fixed{position:fixed;}
+.ns-window.ns-compact{padding:0 8px 7px;font-size:13px;border-top-width:3px;box-shadow:0 2px 8px rgba(0,0,0,.25);}
+.ns-window.ns-compact .ns-window-title{margin:0 -8px 6px;height:22px;line-height:22px;padding:0 10px;font-size:.78rem;}
+.ns-window.ns-compact .ns-window-content:empty{display:none;}
+.ns-window.ns-compact .ns-window-controls{padding-top:0;gap:6px;align-items:center;flex-wrap:nowrap;}
+.ns-window.ns-compact .ns-window-controls img{width:28px;height:28px;cursor:pointer;}
+.ns-zoomval{min-width:3.6em;text-align:center;font-family:var(--ns-font-head);font-weight:800;font-size:1.05em;color:var(--ns-primary-dark);user-select:none;-moz-user-select:none;}
+
+/* ---------- En-tête fixe ---------- */
+#nsheader{position:fixed;top:0;left:0;right:0;height:56px;z-index:100;box-sizing:border-box;background:#fff;border-bottom:3px solid var(--ns-primary);display:flex;align-items:center;gap:16px;padding:0 8px;pointer-events:auto;}
+#nsburger{flex:none;width:40px;height:40px;padding:0;border:0;border-radius:0;background:var(--ns-primary);cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;}
+#nsburger span{display:block;width:22px;height:3px;background:#fff;}
+#nsburger:hover,#nsburger.ns-open{background:var(--ns-primary-dark);}
+#nsburger:focus-visible{outline:2px solid var(--ns-accent);outline-offset:2px;}
+.ns-hd-box{line-height:1.1;user-select:none;-moz-user-select:none;}
+.ns-hd-title{font-family:var(--ns-font-head);font-weight:700;font-size:22px;color:var(--ns-primary);}
+.ns-hd-sub{font-style:italic;font-size:12px;color:#495057;margin-top:3px;}

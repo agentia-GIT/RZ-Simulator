@@ -4,6 +4,13 @@ La version (`NetworkSimulator.version` dans `js/Globals.js` et `package.json`) e
 modification ; le bouton **À propos → Vérifier les mises à jour** la compare à la dernière *release* du dépôt
 https://github.com/agentia-GIT/RZ-Simulator.
 
+## 1.5.0
+- Fenêtre de sauvegarde : titre et bouton **Sauvegarder** (au lieu de « Télécharger ») et nouveau bouton **Parcourir…** pour choisir le dossier et le nom du fichier (Chrome, Edge ; sous Firefox, le fichier va dans le dossier de téléchargements, avec un message qui explique l'option « Toujours demander où enregistrer »).
+- **Zone de travail dynamique** : elle s'agrandit quand on éloigne un objet du bord et se réduit quand il revient (plus de blocage horizontal ou vertical) ; la page défile automatiquement quand on approche le bord en déplaçant un objet.
+- **Zoom** : boutons − / + (30 % à 300 %, clic sur le pourcentage = 100 %, Ctrl + molette), à droite des contrôles d'animation ; le zoom est mémorisé.
+- Contrôles d'animation et de zoom **harmonisés** : fenêtres compactes de même hauteur (~66 px au lieu de ~120 px), côte à côte, fixes à l'écran.
+- L'en-tête (menu burger, titre) est maintenant fixe à l'écran, indépendant du défilement et du zoom.
+
 ## 1.4.0
 - **Sauvegarde automatique** : le réseau est conservé dans le navigateur et restauré au rechargement de la page (plus de perte du travail). Menu Gestion → « Nouveau réseau » pour repartir de zéro.
 - **Vérifier les mises à jour** corrigé : à défaut de release GitHub, utilise la dernière étiquette (tag) puis la version du `package.json` de la branche `main`.

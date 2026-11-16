@@ -119,7 +119,14 @@ var eu_ES = {
     "New network": "Sare berria",
     "Port ": "Portua ",
     "ports": "port",
-    "Ports and MAC table": "Portuak eta MAC taula"
+    "Ports and MAC table": "Portuak eta MAC taula",
+    "Animation": "Animazioa",
+    "Zoom": "Zoom",
+    "Zoom in": "Handitu",
+    "Zoom out": "Txikitu",
+    "Save file": "Gorde fitxategia",
+    "Save to file": "Gorde",
+    "Browse...": "Arakatu..."
 };
 
 uitranslation.registerLocale(eu_ES);

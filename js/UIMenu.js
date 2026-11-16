@@ -115,10 +115,16 @@ var UIMenu = function(description, X,Y, fixed)
         return section;
     };
 
+    // cX, cY : coordonnées de la zone de travail ; converties en pixels de la page (zoom et densité d'écran)
     this.setPos = function(cX, cY)
     {
-        X = cX;
-        Y = cY;
+        var k = 1;
+        if ((typeof network !== "undefined") && (network !== null))
+        {
+            k = network.getZoom() / (window.devicePixelRatio || 1);
+        }
+        X = cX * k;
+        Y = cY * k;
     };
 
     this.setDescription = function(desc)

@@ -33,6 +33,10 @@ var UIWindow = function(windowid, title, w, h, scrollable, opacity)
     var autoY = true;
     var minWidth = Math.max(300, Math.min(w, 720));
     var observer = null;
+    var fixed = false;        // position:fixed (reste visible quand la page défile)
+    var userMoved = false;
+    var layoutHook = null;
+    var inHook = false;
     var opacity = opacity;
     var scrollable = scrollable;
     var windowid = windowid;
@@ -97,8 +101,9 @@ var UIWindow = function(windowid, title, w, h, scrollable, opacity)
                         {
                             break;
                         }
-                        x = evt_x - click_offset_x + getPageScrollX();
-                        y = evt_y - click_offset_y + getPageScrollY();
+                        x = evt_x - click_offset_x + (fixed ? 0 : getPageScrollX());
+                        y = evt_y - click_offset_y + (fixed ? 0 : getPageScrollY());
+                        userMoved = true;
                         autoX = false;
                         autoY = false;
                         outerdiv.setAttribute('style', getOuterStyle());
@@ -134,8 +139,8 @@ var UIWindow = function(windowid, title, w, h, scrollable, opacity)
         }
         var ow = outerdiv.offsetWidth;
         var oh = outerdiv.offsetHeight;
-        var sx = getPageScrollX();
-        var sy = getPageScrollY();
+        var sx = fixed ? 0 : getPageScrollX();
+        var sy = fixed ? 0 : getPageScrollY();
         var nx = x;
         var ny = y;
         if (autoX)
@@ -157,6 +162,11 @@ var UIWindow = function(windowid, title, w, h, scrollable, opacity)
             y = ny;
             outerdiv.style.left = x + 'px';
             outerdiv.style.top = y + 'px';
+        }
+        if ((layoutHook !== null) && !inHook)
+        {
+            inHook = true;
+            try { layoutHook(); } finally { inHook = false; }
         }
     }
 
@@ -263,10 +273,51 @@ var UIWindow = function(windowid, title, w, h, scrollable, opacity)
         return windowid;
     };
 
+    // Position en coordonnées de la page (même pour une fenêtre fixe)
     this.getPos = function()
     {
         layout();
-        return {x: x, y: y};
+        return {x: x + (fixed ? getPageScrollX() : 0), y: y + (fixed ? getPageScrollY() : 0)};
+    };
+
+    // Fenêtre compacte (barre de titre et marges réduites) et/ou fixe à l'écran
+    this.setCompact = function(c)
+    {
+        if (outerdiv !== null)
+        {
+            outerdiv.className = 'ns-window' + (c ? ' ns-compact' : '') + (fixed ? ' ns-fixed' : '');
+        }
+    };
+
+    this.setFixed = function(f)
+    {
+        fixed = (f === true);
+        if (outerdiv !== null)
+        {
+            var compact = / ns-compact/.test(outerdiv.className);
+            outerdiv.className = 'ns-window' + (compact ? ' ns-compact' : '') + (fixed ? ' ns-fixed' : '');
+        }
+    };
+
+    this.wasMoved = function()
+    {
+        return userMoved;
+    };
+
+    this.getSize = function()
+    {
+        return {w: outerdiv.offsetWidth, h: outerdiv.offsetHeight};
+    };
+
+    // Fonction appelée après chaque calcul de disposition (ex. pour aligner deux fenêtres)
+    this.setLayoutHook = function(fn)
+    {
+        layoutHook = fn;
+    };
+
+    this.relayout = function()
+    {
+        layout();
     };
 
     // nx / ny à null : l'axe reste centré automatiquement

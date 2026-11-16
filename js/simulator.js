@@ -102,12 +102,14 @@ function getSpawnPoint()
 {
     var canvas = document.getElementById("simcanvas");
     var bbox = canvas.getBoundingClientRect();
-    var scale = canvas.width / bbox.width;
+    // pixels de l'écran -> coordonnées de la zone de travail (densité d'écran et zoom)
+    var scale = (canvas.width / bbox.width) / network.getZoom();
     var win = AnimationControls.controlsWindow;
     var startX = 380;
     var startY = 70;
     if (win !== null)
     {
+        // La fenêtre d'animation est fixe à l'écran : on la convertit en position dans la zone visible
         var pos = win.getPos();
         startX = (pos.x - (bbox.left + getPageScrollX())) * scale - 90;
         startY = (pos.y - (bbox.top + getPageScrollY())) * scale;
@@ -187,10 +189,13 @@ function simulator(imgs)
     var container = document.getElementById("simcontainer");
     var canvas = document.getElementById("simcanvas");
     
-    var W = container.offsetWidth * window.devicePixelRatio;
-    var H = container.offsetHeight * window.devicePixelRatio;
+    // Taille initiale : la fenêtre ; ensuite le réseau ajuste la zone de travail selon les objets et le zoom
+    var W = Math.max(1, Math.round(document.documentElement.clientWidth * window.devicePixelRatio));
+    var H = Math.max(1, Math.round(document.documentElement.clientHeight * window.devicePixelRatio));
     canvas.width = W;
     canvas.height = H;
+    canvas.style.width = (W / window.devicePixelRatio) + "px";
+    canvas.style.height = (H / window.devicePixelRatio) + "px";
     // « alpha: false » : le fond est entièrement repeint à chaque image, ce qui permet à
     // Firefox d'optimiser la composition. (L'option « antialias » n'existe pas pour un
     // contexte 2D ; elle était ignorée.)
@@ -221,6 +226,25 @@ function simulator(imgs)
       restoreAutosave();
     }
     startAutosave();
+
+    // Zoom mémorisé et zoom à la molette (Ctrl + molette)
+    try
+    {
+        var savedZoom = parseFloat(window.localStorage.getItem("networksimulator.zoom"));
+        if (isFinite(savedZoom) && (savedZoom >= 0.25) && (savedZoom <= 4))
+        {
+            network.setZoom(savedZoom);
+        }
+    }
+    catch (e) {}
+    canvas.addEventListener("wheel", function(e)
+    {
+        if (e.ctrlKey)
+        {
+            e.preventDefault();
+            if (e.deltaY < 0) { ZoomControls.zoomIn(); } else { ZoomControls.zoomOut(); }
+        }
+    }, {passive: false});
 
     createControlsWindow();
 }

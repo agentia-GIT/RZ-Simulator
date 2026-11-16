@@ -1,5 +1,10 @@
 # Network Simulator (Education Network Simulator)
 
+## Version 1.5 — zoom, zone de travail dynamique, sauvegarde avec « Parcourir »
+
+- Boutons de zoom à droite des contrôles d'animation (30 à 300 %), zone de travail qui suit les objets, en-tête et contrôles fixes.
+- Sauvegarde : bouton **Sauvegarder** + **Parcourir…** pour choisir le dossier (navigateurs Chromium).
+
 ## Version 1.4 — switchs 8/16/24/48 ports, sauvegarde automatique
 
 - Le réseau est sauvegardé automatiquement dans le navigateur et restauré au rechargement (menu ☰ → Gestion → *Nouveau réseau* pour l'effacer ; *Sauvegarder* exporte toujours un fichier JSON).

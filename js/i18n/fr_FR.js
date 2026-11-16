@@ -222,7 +222,19 @@ var fr_FR = {
     "MAC address table": "Table d'adresses MAC",
     "Device": "Équipement",
     "No address learned yet.": "Aucune adresse apprise pour l'instant.",
-    "Clear MAC table": "Vider la table MAC"
+    "Clear MAC table": "Vider la table MAC",
+    "Animation": "Animation",
+    "Zoom": "Zoom",
+    "Zoom in": "Zoom avant",
+    "Zoom out": "Zoom arrière",
+    "Reset zoom": "Revenir à 100 %",
+    "Save file": "Sauvegarder le fichier",
+    "Save to file": "Sauvegarder",
+    "Browse...": "Parcourir...",
+    "Destination chosen:": "Destination choisie :",
+    "Use Browse to choose the folder.": "Utilisez « Parcourir » pour choisir le dossier.",
+    "The file goes to your browser's downloads folder.": "Le fichier ira dans le dossier de téléchargements du navigateur.",
+    "Your browser cannot choose a folder from here: the file goes to your downloads folder. In Firefox, enable « Always ask you where to save files » in Settings > General > Downloads.": "Votre navigateur ne permet pas de choisir un dossier ici : le fichier ira dans le dossier de téléchargements. Dans Firefox, activez « Toujours demander où enregistrer les fichiers » (Paramètres > Général > Fichiers et applications)."
 };
 
 uitranslation.registerLocale(fr_FR);

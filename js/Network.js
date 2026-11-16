@@ -40,6 +40,10 @@ var Network = function(imgs, context, w, h)
     var _self = this;
     var W = w;
     var H = h;
+    var zoom = 1;
+    var worldW = 0;   // taille de la zone de travail (unités du canvas, avant zoom)
+    var worldH = 0;
+    var MAX_CANVAS = 16000;
     var selected = null;
     
     var lastFrameTime = null;
@@ -64,9 +68,92 @@ var Network = function(imgs, context, w, h)
             accumulator -= REFRESH_INTERVAL;
         }
         
+        updateCanvasSize();
         render();
         window.requestAnimationFrame(frame);
     }
+
+    // ---- Zone de travail et zoom ------------------------------------------------
+    // La zone de travail s'agrandit quand on éloigne un objet du bord et se réduit quand il revient :
+    // elle couvre au minimum la fenêtre, et au maximum les objets + une marge.
+    function computeWorldSize()
+    {
+        var dpr = window.devicePixelRatio || 1;
+        var vw = document.documentElement.clientWidth || window.innerWidth;
+        var vh = document.documentElement.clientHeight || window.innerHeight;
+        var needW = 0;
+        var needH = 0;
+        var keys = Object.keys(elements);
+        for (var i = 0; i < keys.length; i++)
+        {
+            var r = elements[keys[i]].getDrawable().getRect();
+            // + largeur / hauteur approximatives du libellé sous l'objet, + marge
+            needW = Math.max(needW, r.x + r.width + 260);
+            needH = Math.max(needH, r.y + r.height + 200);
+        }
+        needW = Math.ceil(needW / 200) * 200;
+        needH = Math.ceil(needH / 200) * 200;
+        var limit = Math.floor(MAX_CANVAS / zoom);
+        return {
+            w: Math.min(limit, Math.max(Math.ceil(vw * dpr / zoom), needW)),
+            h: Math.min(limit, Math.max(Math.ceil(vh * dpr / zoom), needH))
+        };
+    }
+
+    function updateCanvasSize(force)
+    {
+        var size = computeWorldSize();
+        if ((force !== true) && (size.w === worldW) && (size.h === worldH))
+        {
+            return;
+        }
+        worldW = size.w;
+        worldH = size.h;
+        var dpr = window.devicePixelRatio || 1;
+        var canvas = ctx.canvas;
+        canvas.width = Math.ceil(worldW * zoom);
+        canvas.height = Math.ceil(worldH * zoom);
+        canvas.style.width = (canvas.width / dpr) + "px";
+        canvas.style.height = (canvas.height / dpr) + "px";
+        W = canvas.width;
+        H = canvas.height;
+    }
+
+    this.getZoom = function()
+    {
+        return zoom;
+    };
+
+    this.getWorldSize = function()
+    {
+        return {w: worldW, h: worldH};
+    };
+
+    // Change le zoom en gardant le même point au centre de la fenêtre
+    this.setZoom = function(z)
+    {
+        z = Math.max(0.25, Math.min(4, z));
+        if (Math.abs(z - zoom) < 0.0001)
+        {
+            return;
+        }
+        var dpr = window.devicePixelRatio || 1;
+        var vw = document.documentElement.clientWidth;
+        var vh = document.documentElement.clientHeight;
+        var cx = (getPageScrollX() + vw / 2) * dpr / zoom;
+        var cy = (getPageScrollY() + vh / 2) * dpr / zoom;
+        uimanager.hideMenus();
+        zoom = z;
+        updateCanvasSize(true);
+        window.scrollTo(cx * zoom / dpr - vw / 2, cy * zoom / dpr - vh / 2);
+        ZoomControls.refresh();
+        try { window.localStorage.setItem("networksimulator.zoom", String(zoom)); } catch (e) {}
+        // Les menus contextuels sont repositionnés pour le nouveau zoom
+        if ((selected !== null) && (selected instanceof Host))
+        {
+            selected.drawableChanged();
+        }
+    };
 
     this.init = function() 
     {
@@ -644,8 +731,10 @@ var Network = function(imgs, context, w, h)
 
     function render() 
     {
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.fillStyle = "#E6E6E6";
-        ctx.fillRect(0, 0, W, H);
+        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.scale(zoom, zoom);
         // Quadrillage discret (motif créé une seule fois)
         if (gridPattern === null)
         {
@@ -654,7 +743,7 @@ var Network = function(imgs, context, w, h)
         if (gridPattern !== null)
         {
             ctx.fillStyle = gridPattern;
-            ctx.fillRect(0, 0, W, H);
+            ctx.fillRect(0, 0, worldW, worldH);
         }
         
         for (var i = 0; i < links.length; i++) 
@@ -671,6 +760,8 @@ var Network = function(imgs, context, w, h)
         renderGroups(ctx);
         
         uimanager.render(ctx);
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        uimanager.updateHeader();
         
         if (DEBUG)
         {

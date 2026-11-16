@@ -201,7 +201,19 @@ var es_ES ={
     "MAC address table": "Tabla de direcciones MAC",
     "Device": "Equipo",
     "No address learned yet.": "Aún no se ha aprendido ninguna dirección.",
-    "Clear MAC table": "Vaciar tabla MAC"
+    "Clear MAC table": "Vaciar tabla MAC",
+    "Animation": "Animación",
+    "Zoom": "Zoom",
+    "Zoom in": "Acercar",
+    "Zoom out": "Alejar",
+    "Reset zoom": "Volver al 100 %",
+    "Save file": "Guardar fichero",
+    "Save to file": "Guardar",
+    "Browse...": "Examinar...",
+    "Destination chosen:": "Destino elegido:",
+    "Use Browse to choose the folder.": "Usa «Examinar» para elegir la carpeta.",
+    "The file goes to your browser's downloads folder.": "El fichero irá a la carpeta de descargas del navegador.",
+    "Your browser cannot choose a folder from here: the file goes to your downloads folder. In Firefox, enable « Always ask you where to save files » in Settings > General > Downloads.": "Tu navegador no permite elegir carpeta aquí: el fichero irá a la carpeta de descargas. En Firefox, activa «Preguntar siempre dónde guardar los archivos» (Ajustes > General > Descargas)."
 };
 
 uitranslation.registerLocale(es_ES);
