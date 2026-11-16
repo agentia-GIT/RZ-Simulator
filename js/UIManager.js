@@ -26,96 +26,6 @@ function createBkDiv()
     document.body.appendChild(div);
 }
 
-// Destination choisie avec « Parcourir » (API File System Access : Chrome, Edge...)
-var saveFileHandle = null;
-
-// Aide adaptée au navigateur quand le choix du dossier n'est pas disponible
-function getSaveHelp()
-{
-    var ua = navigator.userAgent || "";
-    if (typeof navigator.brave !== "undefined")
-    {
-        return _("Brave disables this feature by default: open brave://flags/#file-system-access-api, enable it and restart Brave. Otherwise, in Settings > Downloads, enable \u00ab Ask where to save each file before downloading \u00bb.");
-    }
-    if (/Firefox\//.test(ua))
-    {
-        return _("In Firefox, enable \u00ab Always ask you where to save files \u00bb in Settings > General > Files and Applications.");
-    }
-    return _("In your browser, open Settings > Downloads and enable \u00ab Ask where to save each file before downloading \u00bb. The file is otherwise saved in your downloads folder.");
-}
-
-function canBrowseFolders()
-{
-    return (typeof window.showSaveFilePicker === "function");
-}
-
-function browseSaveLocation()
-{
-    if (!canBrowseFolders())
-    {
-        alert(_("This browser does not offer the folder chooser here.") + "\n\n" + getSaveHelp());
-        return;
-    }
-    var input = document.getElementById('filename');
-    var wanted = (input && input.value.trim() !== "") ? input.value.trim() : "network.json";
-
-    function chosen(handle)
-    {
-        saveFileHandle = handle;
-        if (input)
-        {
-            input.value = handle.name;
-        }
-        var info = document.getElementById('savedest');
-        if (info)
-        {
-            info.textContent = _("Destination chosen:") + " " + handle.name;
-        }
-    }
-
-    function failed(e)
-    {
-        // Annulation par l'utilisateur : rien à signaler
-        if (e && (e.name === "AbortError"))
-        {
-            return;
-        }
-        alert(_("The folder chooser could not be opened:") + " " + (e && e.name ? e.name : "?") + (e && e.message ? " - " + e.message : "")
-            + "\n" + _("The file will be saved in your downloads folder instead."));
-    }
-
-    var picker;
-    try
-    {
-        picker = window.showSaveFilePicker({
-            suggestedName: wanted,
-            types: [{description: "JSON", accept: {"application/json": [".json"]}}]
-        });
-    }
-    catch (e)
-    {
-        failed(e);
-        return;
-    }
-    picker.then(chosen).catch(function(e)
-    {
-        if (e && (e.name === "AbortError"))
-        {
-            return;
-        }
-        // Certains navigateurs refusent le filtre de types : seconde tentative sans filtre
-        // (l'activation utilisateur peut être perdue : dans ce cas l'erreur est affichée)
-        try
-        {
-            window.showSaveFilePicker({suggestedName: wanted}).then(chosen).catch(failed);
-        }
-        catch (e2)
-        {
-            failed(e2);
-        }
-    });
-}
-
 function downloadViaLink(filename, text)
 {
     var blob = new Blob([text], {type: "application/json;charset=utf-8"});
@@ -138,24 +48,7 @@ function saveNetwork()
     {
         filename = "network.json";
     }
-    var text = network.save();
-    if ((saveFileHandle !== null) && (saveFileHandle.name === filename))
-    {
-        var handle = saveFileHandle;
-        handle.createWritable().then(function(stream)
-        {
-            return stream.write(text).then(function() { return stream.close(); });
-        }).catch(function(e)
-        {
-            // Écriture impossible (permission refusée...) : on le dit, puis téléchargement classique
-            alert(_("Could not write the chosen file:") + " " + (e && e.name ? e.name : "?") + "\n" + _("The file will be saved in your downloads folder instead."));
-            downloadViaLink(filename, text);
-        });
-    }
-    else
-    {
-        downloadViaLink(filename, text);
-    }
+    downloadViaLink(filename, network.save());
     cancelDownload();
 }
 
@@ -176,7 +69,6 @@ function cancelUpload()
 
 function cancelDownload()
 {
-    saveFileHandle = null;
     uimanager.getWindow("divdownload").dispose();
     removeBodyDiv('divbk');
 }
@@ -234,12 +126,9 @@ function createUploadDiv()
 function createDownloadDiv()
 {
     var div = document.createElement("div");
-    saveFileHandle = null;
     var innerHTML = '<p><label for="filename">'+_("File name:")+'</label> <input type="text" id="filename" name="filename" value="network.json" /></p>';
-    innerHTML += '<p class="ns-hint" id="savedest">' + escapeHTML(canBrowseFolders() ? _("Use Browse to choose the folder.") : _("The file goes to your browser's downloads folder.")) + '</p>';
     var controls = '<p>\
   <input type="button" id="upload" value="'+_("Save to file")+'" onclick="saveNetwork();" />\
-  <input type="button" id="browse" value="'+_("Browse...")+'" onclick="browseSaveLocation();" />\
   <input type="button" id="cancel" value="'+_("Cancel")+'" onclick="cancelDownload();" />\
   </p>';
     //document.body.appendChild(div);

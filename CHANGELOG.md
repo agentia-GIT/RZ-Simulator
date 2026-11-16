@@ -4,6 +4,9 @@ La version (`NetworkSimulator.version` dans `js/Globals.js` et `package.json`) e
 modification ; le bouton **À propos → Vérifier les mises à jour** la compare à la dernière *release* du dépôt
 https://github.com/agentia-GIT/RZ-Simulator.
 
+## 1.5.3
+- Fenêtre de sauvegarde : le bouton « Parcourir… » est retiré (il n'est pas disponible dans Firefox) ; « Sauvegarder » télécharge le fichier, et le navigateur propose le dossier s'il est réglé sur « Toujours demander où enregistrer les fichiers ».
+
 ## 1.5.2
 - Message d'aide de « Parcourir… » adapté au navigateur (Brave, Firefox, Chrome/Edge/Opera) quand le choix du dossier n'est pas disponible, avec le réglage « Demander où enregistrer chaque fichier ».
 
