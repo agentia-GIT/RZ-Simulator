@@ -213,7 +213,10 @@ var es_ES ={
     "Destination chosen:": "Destino elegido:",
     "Use Browse to choose the folder.": "Usa «Examinar» para elegir la carpeta.",
     "The file goes to your browser's downloads folder.": "El fichero irá a la carpeta de descargas del navegador.",
-    "Your browser cannot choose a folder from here: the file goes to your downloads folder. In Firefox, enable « Always ask you where to save files » in Settings > General > Downloads.": "Tu navegador no permite elegir carpeta aquí: el fichero irá a la carpeta de descargas. En Firefox, activa «Preguntar siempre dónde guardar los archivos» (Ajustes > General > Descargas)."
+    "Your browser cannot choose a folder from here: the file goes to your downloads folder. In Firefox, enable « Always ask you where to save files » in Settings > General > Downloads.": "Tu navegador no permite elegir carpeta aquí: el fichero irá a la carpeta de descargas. En Firefox, activa «Preguntar siempre dónde guardar los archivos» (Ajustes > General > Descargas).",
+    "The folder chooser could not be opened:": "No se pudo abrir el selector de carpeta:",
+    "The file will be saved in your downloads folder instead.": "El fichero se guardará en tu carpeta de descargas.",
+    "Could not write the chosen file:": "No se pudo escribir en el fichero elegido:"
 };
 
 uitranslation.registerLocale(es_ES);

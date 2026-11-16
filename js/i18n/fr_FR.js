@@ -234,7 +234,10 @@ var fr_FR = {
     "Destination chosen:": "Destination choisie :",
     "Use Browse to choose the folder.": "Utilisez « Parcourir » pour choisir le dossier.",
     "The file goes to your browser's downloads folder.": "Le fichier ira dans le dossier de téléchargements du navigateur.",
-    "Your browser cannot choose a folder from here: the file goes to your downloads folder. In Firefox, enable « Always ask you where to save files » in Settings > General > Downloads.": "Votre navigateur ne permet pas de choisir un dossier ici : le fichier ira dans le dossier de téléchargements. Dans Firefox, activez « Toujours demander où enregistrer les fichiers » (Paramètres > Général > Fichiers et applications)."
+    "Your browser cannot choose a folder from here: the file goes to your downloads folder. In Firefox, enable « Always ask you where to save files » in Settings > General > Downloads.": "Votre navigateur ne permet pas de choisir un dossier ici : le fichier ira dans le dossier de téléchargements. Dans Firefox, activez « Toujours demander où enregistrer les fichiers » (Paramètres > Général > Fichiers et applications).",
+    "The folder chooser could not be opened:": "Impossible d'ouvrir la fenêtre de choix du dossier :",
+    "The file will be saved in your downloads folder instead.": "Le fichier sera enregistré dans votre dossier de téléchargements.",
+    "Could not write the chosen file:": "Impossible d'écrire dans le fichier choisi :"
 };
 
 uitranslation.registerLocale(fr_FR);

@@ -4,6 +4,9 @@ La version (`NetworkSimulator.version` dans `js/Globals.js` et `package.json`) e
 modification ; le bouton **À propos → Vérifier les mises à jour** la compare à la dernière *release* du dépôt
 https://github.com/agentia-GIT/RZ-Simulator.
 
+## 1.5.1
+- « Parcourir… » : les erreurs du sélecteur de dossier ne sont plus ignorées en silence ; un message indique la cause (nom de l'erreur) et le fichier est enregistré dans le dossier de téléchargements. Seconde tentative sans filtre de type si le navigateur refuse le premier appel. Même message si l'écriture dans le fichier choisi échoue.
+
 ## 1.5.0
 - Fenêtre de sauvegarde : titre et bouton **Sauvegarder** (au lieu de « Télécharger ») et nouveau bouton **Parcourir…** pour choisir le dossier et le nom du fichier (Chrome, Edge ; sous Firefox, le fichier va dans le dossier de téléchargements, avec un message qui explique l'option « Toujours demander où enregistrer »).
 - **Zone de travail dynamique** : elle s'agrandit quand on éloigne un objet du bord et se réduit quand il revient (plus de blocage horizontal ou vertical) ; la page défile automatiquement quand on approche le bord en déplaçant un objet.

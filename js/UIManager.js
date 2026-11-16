@@ -43,10 +43,8 @@ function browseSaveLocation()
     }
     var input = document.getElementById('filename');
     var wanted = (input && input.value.trim() !== "") ? input.value.trim() : "network.json";
-    window.showSaveFilePicker({
-        suggestedName: wanted,
-        types: [{description: "JSON", accept: {"application/json": [".json"]}}]
-    }).then(function(handle)
+
+    function chosen(handle)
     {
         saveFileHandle = handle;
         if (input)
@@ -58,9 +56,48 @@ function browseSaveLocation()
         {
             info.textContent = _("Destination chosen:") + " " + handle.name;
         }
-    }).catch(function()
+    }
+
+    function failed(e)
     {
-        // Annulé par l'utilisateur : rien à faire
+        // Annulation par l'utilisateur : rien à signaler
+        if (e && (e.name === "AbortError"))
+        {
+            return;
+        }
+        alert(_("The folder chooser could not be opened:") + " " + (e && e.name ? e.name : "?") + (e && e.message ? " - " + e.message : "")
+            + "\n" + _("The file will be saved in your downloads folder instead."));
+    }
+
+    var picker;
+    try
+    {
+        picker = window.showSaveFilePicker({
+            suggestedName: wanted,
+            types: [{description: "JSON", accept: {"application/json": [".json"]}}]
+        });
+    }
+    catch (e)
+    {
+        failed(e);
+        return;
+    }
+    picker.then(chosen).catch(function(e)
+    {
+        if (e && (e.name === "AbortError"))
+        {
+            return;
+        }
+        // Certains navigateurs refusent le filtre de types : seconde tentative sans filtre
+        // (l'activation utilisateur peut être perdue : dans ce cas l'erreur est affichée)
+        try
+        {
+            window.showSaveFilePicker({suggestedName: wanted}).then(chosen).catch(failed);
+        }
+        catch (e2)
+        {
+            failed(e2);
+        }
     });
 }
 
@@ -93,9 +130,10 @@ function saveNetwork()
         handle.createWritable().then(function(stream)
         {
             return stream.write(text).then(function() { return stream.close(); });
-        }).catch(function()
+        }).catch(function(e)
         {
-            // Écriture impossible (permission refusée...) : on retombe sur le téléchargement classique
+            // Écriture impossible (permission refusée...) : on le dit, puis téléchargement classique
+            alert(_("Could not write the chosen file:") + " " + (e && e.name ? e.name : "?") + "\n" + _("The file will be saved in your downloads folder instead."));
             downloadViaLink(filename, text);
         });
     }
