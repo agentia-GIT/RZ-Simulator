@@ -1,0 +1,89 @@
+/*
+ * Network Simulator v1.1 — thème visuel inspiré du site v3i.fr
+ * Palette relevée sur le site : bleu #00507c, bleu foncé #003C5D, noir #000001,
+ * gris clair #E6E6E6, bleu lien #00a2fc ; titres Manrope, texte Open Sans, angles droits.
+ * Polices (SIL OFL / Apache 2.0) embarquées dans /fonts : aucun appel réseau externe.
+ */
+@font-face{font-family:"Manrope";font-weight:400;font-style:normal;font-display:swap;src:url("../fonts/manrope-latin-400-normal.woff2") format("woff2");}
+@font-face{font-family:"Manrope";font-weight:600;font-style:normal;font-display:swap;src:url("../fonts/manrope-latin-600-normal.woff2") format("woff2");}
+@font-face{font-family:"Manrope";font-weight:700;font-style:normal;font-display:swap;src:url("../fonts/manrope-latin-700-normal.woff2") format("woff2");}
+@font-face{font-family:"Open Sans";font-weight:400;font-style:normal;font-display:swap;src:url("../fonts/open-sans-latin-400-normal.woff2") format("woff2");}
+@font-face{font-family:"Open Sans";font-weight:600;font-style:normal;font-display:swap;src:url("../fonts/open-sans-latin-600-normal.woff2") format("woff2");}
+@font-face{font-family:"Open Sans";font-weight:400;font-style:italic;font-display:swap;src:url("../fonts/open-sans-latin-400-italic.woff2") format("woff2");}
+
+:root{
+  --ns-primary:#00507c;
+  --ns-primary-dark:#003c5d;
+  --ns-accent:#00a2fc;
+  --ns-black:#000001;
+  --ns-grey:#e6e6e6;
+  --ns-grey-line:#dee2e6;
+  --ns-text:#212529;
+  --ns-white:#fff;
+  --ns-font-head:"Manrope","Open Sans",Arial,sans-serif;
+  --ns-font-body:"Open Sans",Arial,sans-serif;
+  --ns-shadow:0 6px 24px rgba(0,0,0,.22);
+}
+
+html,body{margin:0;padding:0;width:2048px;font-family:var(--ns-font-body);color:var(--ns-text);background:var(--ns-grey);}
+table{border:1px solid var(--ns-grey-line);border-collapse:collapse;width:100%;}
+td,th{border:1px solid var(--ns-grey-line);padding:2px 4px;}
+th{background:var(--ns-grey);font-family:var(--ns-font-head);font-weight:600;}
+fieldset{font-size:.8em;border:1px solid var(--ns-grey-line);}
+legend{font-family:var(--ns-font-head);color:var(--ns-primary);font-weight:600;}
+#simcanvas{display:block;width:2048px;height:1024px;user-select:none;-moz-user-select:none;}
+#simcontainer{user-select:none;-moz-user-select:none;}
+input[type="text"],select,textarea{font-family:inherit;border:1px solid #ced4da;border-radius:0;padding:3px 5px;}
+input[type="text"]:focus,select:focus,textarea:focus{outline:2px solid var(--ns-accent);outline-offset:0;border-color:var(--ns-primary);}
+a{color:var(--ns-primary);}
+
+/* ---------- Boutons (style v3i : carrés, bleu plein) ---------- */
+.ns-btn{font-family:var(--ns-font-body);font-weight:600;background:var(--ns-primary);color:#fff;border:0;border-radius:0;padding:7px 16px;cursor:pointer;font-size:.9em;}
+.ns-btn:hover{background:var(--ns-primary-dark);}
+.ns-btn:focus-visible{outline:2px solid var(--ns-accent);outline-offset:2px;}
+.ns-btn[disabled]{opacity:.6;cursor:wait;}
+.ns-window-controls button,.ns-window button,.ns-window input[type="button"],.ns-window input[type="submit"]{font-family:var(--ns-font-body);font-weight:600;background:var(--ns-primary);color:#fff;border:0;border-radius:0;padding:6px 14px;margin:0 3px;cursor:pointer;}
+.ns-window-controls button:hover,.ns-window button:hover,.ns-window input[type="button"]:hover,.ns-window input[type="submit"]:hover{background:var(--ns-primary-dark);}
+
+/* ---------- Fenêtres ---------- */
+.ns-window{position:absolute;z-index:110;box-sizing:content-box;background:#fff;border:0;border-top:4px solid var(--ns-accent);border-radius:0;padding:0 10px 10px;text-align:center;box-shadow:var(--ns-shadow);font-family:var(--ns-font-body);}
+.ns-window-title{margin:0 -10px 10px;padding:0 12px;height:30px;line-height:30px;box-sizing:border-box;text-align:left;background:var(--ns-primary);color:#fff;font-family:var(--ns-font-head);font-weight:700;font-size:.9em;letter-spacing:.2px;cursor:move;user-select:none;-moz-user-select:none;-webkit-user-select:none;}
+
+/* ---------- Menu burger et menus contextuels ---------- */
+.ns-menu{position:absolute;z-index:120;box-sizing:border-box;width:300px;max-height:calc(100vh - 72px);overflow-y:auto;background:#fff;border-top:4px solid var(--ns-accent);box-shadow:var(--ns-shadow);font-family:var(--ns-font-body);font-size:.9rem;color:var(--ns-text);}
+.ns-menu.ns-fixed{position:fixed;}
+.ns-menu-title{margin:0;padding:12px 16px;background:var(--ns-primary-dark);color:#fff;font-family:var(--ns-font-head);font-weight:700;font-size:1rem;letter-spacing:.3px;}
+.ns-menu-list{list-style:none;margin:0;padding:0;}
+.ns-menu a.ns-item,.ns-section-head{display:flex;align-items:center;gap:12px;box-sizing:border-box;width:100%;padding:9px 16px;text-decoration:none;color:var(--ns-text);background:none;border:0;border-bottom:1px solid var(--ns-grey-line);font:inherit;text-align:left;cursor:pointer;}
+.ns-menu a.ns-item:hover,.ns-section-head:hover{background:var(--ns-grey);color:var(--ns-primary);}
+.ns-menu a.ns-item:focus-visible,.ns-section-head:focus-visible{outline:2px solid var(--ns-accent);outline-offset:-2px;}
+.ns-menu a.ns-item img{width:32px;height:32px;object-fit:contain;flex:none;}
+.ns-menu a.ns-item.ns-active{color:var(--ns-primary);font-weight:600;}
+.ns-menu a.ns-item.ns-active::after{content:"\2713";margin-left:auto;color:var(--ns-accent);font-weight:700;}
+.ns-section-head{font-family:var(--ns-font-head);font-weight:600;font-size:.95rem;}
+.ns-section-head .ns-ico{width:32px;height:32px;flex:none;display:flex;align-items:center;justify-content:center;background:var(--ns-primary);}
+.ns-section-head .ns-ico b{color:#fff;font-family:var(--ns-font-head);font-size:1rem;font-style:italic;}
+.ns-section-head .ns-chev{margin-left:auto;width:8px;height:8px;border-right:2px solid var(--ns-primary);border-bottom:2px solid var(--ns-primary);transform:rotate(45deg);transition:transform .15s;}
+.ns-section.ns-open>.ns-section-head{background:var(--ns-grey);color:var(--ns-primary);}
+.ns-section.ns-open>.ns-section-head .ns-chev{transform:rotate(-135deg);}
+.ns-sub{display:none;background:#f8f9fa;border-left:4px solid var(--ns-accent);}
+.ns-section.ns-open>.ns-sub{display:block;}
+.ns-sub a.ns-item{padding-left:20px;font-size:.88rem;}
+.ns-info{padding:10px 20px;font-size:.88rem;line-height:1.5;border-bottom:1px solid var(--ns-grey-line);}
+.ns-info strong{font-family:var(--ns-font-head);color:var(--ns-primary);}
+.ns-info small{color:#6c757d;}
+.ns-status{padding:0 20px 12px;font-size:.85rem;min-height:1.2em;}
+.ns-status.ns-ok{color:#1e7e34;}
+.ns-status.ns-warn{color:#b35c00;}
+.ns-actions{padding:10px 20px;}
+
+/* ---------- Imprimante / Wi-Fi ---------- */
+.ns-printer table{margin:6px 0;font-size:.85em;}
+.ns-printer th{text-align:left;}
+.ns-chip{display:inline-block;margin:2px 0 6px;padding:3px 12px;color:#fff;font-family:var(--ns-font-head);font-weight:700;font-size:.9em;}
+.ns-meter-label{margin:6px 0 2px;font-size:.85em;}
+.ns-meter{height:10px;background:var(--ns-grey);border:1px solid var(--ns-grey-line);}
+.ns-meter>div{height:100%;transition:width .3s;}
+.ns-status{font-size:.85em;min-height:1.2em;}
+.ns-status.ns-ok{color:#1e7e34;font-weight:600;}
+.ns-status.ns-warn{color:#b35c00;font-weight:600;}

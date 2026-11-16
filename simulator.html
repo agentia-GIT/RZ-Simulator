@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Network Simulator 1.2</title>
+    <meta name="theme-color" content="#00507c">
+    <link rel="icon" href="data:,">
+    <script type="text/javascript" src="dist/networksim.min.js"></script>
+    <script type="text/javascript">
+
+function init()
+{
+    var loader = new ImageLoader(
+    ["img/v3i/switch.svg",
+        "img/v3i/router2.svg",
+        "img/v3i/computer.svg",
+        "img/v3i/server_web.svg",
+        "img/v3i/server_dns.svg",
+        "img/v3i/server_dhcp.svg",
+        "img/v3i/envelope-DHCP.svg",
+        "img/v3i/envelope-DNS.svg",
+        "img/v3i/envelope-HTTP.svg",
+        "img/v3i/envelope-ICMP.svg",
+        "img/v3i/printer.svg",
+        "img/v3i/accesspoint.svg",
+        "img/v3i/envelope-PRINT.svg"],
+    simulator
+    );
+    loader.load();
+}
+</script>
+    <link rel="stylesheet" href="css/theme.css">
+  </head>
+  <body onload="init();">
+    <noscript>This simulator requires JavaScript.</noscript>
+    <div id="simcontainer" style="float:right;width:2048px; height:1024px;">
+      <canvas id="simcanvas" width="2048" height="1024"></canvas>
+    </div>
+  </body>
+</html>
