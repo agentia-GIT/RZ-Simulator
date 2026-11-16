@@ -29,6 +29,21 @@ function createBkDiv()
 // Destination choisie avec « Parcourir » (API File System Access : Chrome, Edge...)
 var saveFileHandle = null;
 
+// Aide adaptée au navigateur quand le choix du dossier n'est pas disponible
+function getSaveHelp()
+{
+    var ua = navigator.userAgent || "";
+    if (typeof navigator.brave !== "undefined")
+    {
+        return _("Brave disables this feature by default: open brave://flags/#file-system-access-api, enable it and restart Brave. Otherwise, in Settings > Downloads, enable \u00ab Ask where to save each file before downloading \u00bb.");
+    }
+    if (/Firefox\//.test(ua))
+    {
+        return _("In Firefox, enable \u00ab Always ask you where to save files \u00bb in Settings > General > Files and Applications.");
+    }
+    return _("In your browser, open Settings > Downloads and enable \u00ab Ask where to save each file before downloading \u00bb. The file is otherwise saved in your downloads folder.");
+}
+
 function canBrowseFolders()
 {
     return (typeof window.showSaveFilePicker === "function");
@@ -38,7 +53,7 @@ function browseSaveLocation()
 {
     if (!canBrowseFolders())
     {
-        alert(_("Your browser cannot choose a folder from here: the file goes to your downloads folder. In Firefox, enable \u00ab Always ask you where to save files \u00bb in Settings > General > Downloads."));
+        alert(_("This browser does not offer the folder chooser here.") + "\n\n" + getSaveHelp());
         return;
     }
     var input = document.getElementById('filename');

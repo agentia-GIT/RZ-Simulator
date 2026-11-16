@@ -237,7 +237,11 @@ var fr_FR = {
     "Your browser cannot choose a folder from here: the file goes to your downloads folder. In Firefox, enable « Always ask you where to save files » in Settings > General > Downloads.": "Votre navigateur ne permet pas de choisir un dossier ici : le fichier ira dans le dossier de téléchargements. Dans Firefox, activez « Toujours demander où enregistrer les fichiers » (Paramètres > Général > Fichiers et applications).",
     "The folder chooser could not be opened:": "Impossible d'ouvrir la fenêtre de choix du dossier :",
     "The file will be saved in your downloads folder instead.": "Le fichier sera enregistré dans votre dossier de téléchargements.",
-    "Could not write the chosen file:": "Impossible d'écrire dans le fichier choisi :"
+    "Could not write the chosen file:": "Impossible d'écrire dans le fichier choisi :",
+    "This browser does not offer the folder chooser here.": "Ce navigateur ne propose pas le choix du dossier ici.",
+    "Brave disables this feature by default: open brave://flags/#file-system-access-api, enable it and restart Brave. Otherwise, in Settings > Downloads, enable « Ask where to save each file before downloading ».": "Brave désactive cette fonction par défaut : ouvrez brave://flags/#file-system-access-api, activez-la puis relancez Brave. Sinon, dans Paramètres > Téléchargements, activez « Demander où enregistrer chaque fichier avant de le télécharger ».",
+    "In Firefox, enable « Always ask you where to save files » in Settings > General > Files and Applications.": "Dans Firefox, activez « Toujours demander où enregistrer les fichiers » (Paramètres > Général > Fichiers et applications).",
+    "In your browser, open Settings > Downloads and enable « Ask where to save each file before downloading ». The file is otherwise saved in your downloads folder.": "Dans votre navigateur (Chrome, Edge, Opera...), ouvrez Paramètres > Téléchargements et activez « Demander où enregistrer chaque fichier avant de le télécharger ». Sinon, le fichier est enregistré dans votre dossier de téléchargements."
 };
 
 uitranslation.registerLocale(fr_FR);

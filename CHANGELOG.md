@@ -4,6 +4,9 @@ La version (`NetworkSimulator.version` dans `js/Globals.js` et `package.json`) e
 modification ; le bouton **À propos → Vérifier les mises à jour** la compare à la dernière *release* du dépôt
 https://github.com/agentia-GIT/RZ-Simulator.
 
+## 1.5.2
+- Message d'aide de « Parcourir… » adapté au navigateur (Brave, Firefox, Chrome/Edge/Opera) quand le choix du dossier n'est pas disponible, avec le réglage « Demander où enregistrer chaque fichier ».
+
 ## 1.5.1
 - « Parcourir… » : les erreurs du sélecteur de dossier ne sont plus ignorées en silence ; un message indique la cause (nom de l'erreur) et le fichier est enregistré dans le dossier de téléchargements. Seconde tentative sans filtre de type si le navigateur refuse le premier appel. Même message si l'écriture dans le fichier choisi échoue.
 

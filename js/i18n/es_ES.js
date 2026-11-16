@@ -216,7 +216,9 @@ var es_ES ={
     "Your browser cannot choose a folder from here: the file goes to your downloads folder. In Firefox, enable « Always ask you where to save files » in Settings > General > Downloads.": "Tu navegador no permite elegir carpeta aquí: el fichero irá a la carpeta de descargas. En Firefox, activa «Preguntar siempre dónde guardar los archivos» (Ajustes > General > Descargas).",
     "The folder chooser could not be opened:": "No se pudo abrir el selector de carpeta:",
     "The file will be saved in your downloads folder instead.": "El fichero se guardará en tu carpeta de descargas.",
-    "Could not write the chosen file:": "No se pudo escribir en el fichero elegido:"
+    "Could not write the chosen file:": "No se pudo escribir en el fichero elegido:",
+    "This browser does not offer the folder chooser here.": "Este navegador no ofrece aquí el selector de carpeta.",
+    "In your browser, open Settings > Downloads and enable « Ask where to save each file before downloading ». The file is otherwise saved in your downloads folder.": "En tu navegador, abre Ajustes > Descargas y activa «Preguntar dónde guardar cada archivo antes de descargarlo». Si no, el fichero va a tu carpeta de descargas."
 };
 
 uitranslation.registerLocale(es_ES);
