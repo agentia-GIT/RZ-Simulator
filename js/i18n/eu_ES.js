@@ -111,7 +111,15 @@ var eu_ES = {
     "Print a document": "Inprimatu dokumentu bat",
     "Channel": "Kanala",
     "Print": "Inprimatu",
-    "Status": "Egoera"
+    "Status": "Egoera",
+    "Add 8-port switch": "Gehitu 8 portuko switch",
+    "Add 16-port switch": "Gehitu 16 portuko switch",
+    "Add 24-port switch": "Gehitu 24 portuko switch",
+    "Add 48-port switch": "Gehitu 48 portuko switch",
+    "New network": "Sare berria",
+    "Port ": "Portua ",
+    "ports": "port",
+    "Ports and MAC table": "Portuak eta MAC taula"
 };
 
 uitranslation.registerLocale(eu_ES);

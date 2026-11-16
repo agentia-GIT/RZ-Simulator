@@ -16,6 +16,7 @@ var Connector = function(connectable)
     this.id = getNextID();
     var connectable = connectable;
     var link = null;
+    var disabled = false;   // port arrêté (« shutdown ») : plus aucun trafic
     var _self = this;
     
     this.save = function() 
@@ -23,6 +24,7 @@ var Connector = function(connectable)
         var result = {};
         result.version = 1;
         result.id = this.id;
+        result.disabled = disabled;
         
         return result;
     };
@@ -30,6 +32,17 @@ var Connector = function(connectable)
     this.load = function(data) 
     {
         this.id = data.id;
+        disabled = (data.disabled === true);
+    };
+
+    this.isDisabled = function()
+    {
+        return disabled;
+    };
+
+    this.setDisabled = function(d)
+    {
+        disabled = (d === true);
     };
     
     function init() {
@@ -47,7 +60,7 @@ var Connector = function(connectable)
     
     this.send = function(message) 
     {
-        if ((link != null) && (message.canSend()))
+        if ((link != null) && !disabled && (message.canSend()))
         {
             link.addMessage(_self, message);
         }
@@ -55,6 +68,10 @@ var Connector = function(connectable)
     
     this.receive = function(message) 
     {
+        if (disabled)
+        {
+            return;
+        }
         connectable.getTrafficManager().proccess(this, message);
     };
     

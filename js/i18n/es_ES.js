@@ -179,7 +179,29 @@ var es_ES ={
     "No station connected.": "Ninguna estación conectada.",
     "Channel interference with:": "Interferencia de canal con:",
     "Password:": "Contraseña:",
-    "Then create a link between this device and a Wi-Fi slot of an access point.": "Después crea un enlace entre este equipo y una ranura Wi-Fi de un punto de acceso."
+    "Then create a link between this device and a Wi-Fi slot of an access point.": "Después crea un enlace entre este equipo y una ranura Wi-Fi de un punto de acceso.",
+    "Add 8-port switch": "Añadir switch de 8 puertos",
+    "Add 16-port switch": "Añadir switch de 16 puertos",
+    "Add 24-port switch": "Añadir switch de 24 puertos",
+    "Add 48-port switch": "Añadir switch de 48 puertos",
+    "New network": "Nueva red",
+    "Auto-save": "Guardado automático",
+    "Enabled": "Activado",
+    "Delete the current network and start a new one?": "¿Eliminar la red actual y empezar una nueva?",
+    "Port ": "Puerto ",
+    "ports": "puertos",
+    "active": "activos",
+    "Ports and MAC table": "Puertos y tabla MAC",
+    "Port shut down": "Puerto apagado",
+    "Click a port to shut it down or bring it back up.": "Haz clic en un puerto para apagarlo o volver a activarlo.",
+    "Connected to": "Conectado a",
+    "Shut down": "Apagado",
+    "Up": "Activo",
+    "No cable connected.": "Ningún cable conectado.",
+    "MAC address table": "Tabla de direcciones MAC",
+    "Device": "Equipo",
+    "No address learned yet.": "Aún no se ha aprendido ninguna dirección.",
+    "Clear MAC table": "Vaciar tabla MAC"
 };
 
 uitranslation.registerLocale(es_ES);

@@ -1,5 +1,11 @@
 # Network Simulator (Education Network Simulator)
 
+## Version 1.4 — switchs 8/16/24/48 ports, sauvegarde automatique
+
+- Le réseau est sauvegardé automatiquement dans le navigateur et restauré au rechargement (menu ☰ → Gestion → *Nouveau réseau* pour l'effacer ; *Sauvegarder* exporte toujours un fichier JSON).
+- Switchs de 8, 16, 24 et 48 ports avec table MAC, état des ports et arrêt de port.
+- La vérification des mises à jour fonctionne même sans release publiée.
+
 ## Version 1.3 — fenêtres adaptatives, groupes lisibles
 
 - Toutes les fenêtres s'adaptent automatiquement à leur contenu et restent centrées/visibles.

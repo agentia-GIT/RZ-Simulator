@@ -208,6 +208,8 @@ var UIManager = function()
         var manage = mainmenu.addSection("Management", "manage");
         manage.addEntry("img/v3i/save.svg", "Save network", 'downloadClick();');
         manage.addEntry("img/v3i/upload.svg", "Restore network", 'uploadClick();');
+        manage.addEntry("img/v3i/delete.svg", "New network", 'newNetwork();');
+        manage.addInfo([["Auto-save", "Enabled"]]);
 
         // Bibliothèque d'objets : équipements à ajouter au réseau
         var library = mainmenu.addSection("Object library", "library");
@@ -215,7 +217,10 @@ var UIManager = function()
         library.addEntry("img/v3i/server_dhcp.svg", "Add DHCP server", 'newElement("dhcp");');
         library.addEntry("img/v3i/server_dns.svg", "Add DNS server", 'newElement("dns");');
         library.addEntry("img/v3i/server_web.svg", "Add web server", 'newElement("web");');
-        library.addEntry("img/v3i/switch.svg", "Add switch", 'newElement("switch");');
+        library.addEntry("img/v3i/switch.svg", "Add 8-port switch", 'newElement("switch8");');
+        library.addEntry("img/v3i/switch.svg", "Add 16-port switch", 'newElement("switch16");');
+        library.addEntry("img/v3i/switch.svg", "Add 24-port switch", 'newElement("switch24");');
+        library.addEntry("img/v3i/switch.svg", "Add 48-port switch", 'newElement("switch48");');
         library.addEntry("img/v3i/router2.svg", "Add router", 'newElement("router");');
         library.addEntry("img/v3i/printer.svg", "Add network printer", 'newElement("printer");');
         library.addEntry("img/v3i/accesspoint.svg", "Add Wi-Fi access point", 'newElement("accesspoint");');

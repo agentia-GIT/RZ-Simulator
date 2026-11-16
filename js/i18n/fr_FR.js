@@ -200,7 +200,29 @@ var fr_FR = {
     "No station connected.": "Aucune station connectée.",
     "Channel interference with:": "Interférence de canal avec :",
     "Password:": "Mot de passe :",
-    "Then create a link between this device and a Wi-Fi slot of an access point.": "Créez ensuite un lien entre cet équipement et un emplacement Wi-Fi d'une borne."
+    "Then create a link between this device and a Wi-Fi slot of an access point.": "Créez ensuite un lien entre cet équipement et un emplacement Wi-Fi d'une borne.",
+    "Add 8-port switch": "Ajouter un switch 8 ports",
+    "Add 16-port switch": "Ajouter un switch 16 ports",
+    "Add 24-port switch": "Ajouter un switch 24 ports",
+    "Add 48-port switch": "Ajouter un switch 48 ports",
+    "New network": "Nouveau réseau",
+    "Auto-save": "Sauvegarde auto",
+    "Enabled": "Activée",
+    "Delete the current network and start a new one?": "Supprimer le réseau actuel et en commencer un nouveau ?",
+    "Port ": "Port ",
+    "ports": "ports",
+    "active": "actifs",
+    "Ports and MAC table": "Ports et table MAC",
+    "Port shut down": "Port arrêté",
+    "Click a port to shut it down or bring it back up.": "Cliquez sur un port pour l'arrêter ou le remettre en service.",
+    "Connected to": "Connecté à",
+    "Shut down": "Arrêté",
+    "Up": "Actif",
+    "No cable connected.": "Aucun câble branché.",
+    "MAC address table": "Table d'adresses MAC",
+    "Device": "Équipement",
+    "No address learned yet.": "Aucune adresse apprise pour l'instant.",
+    "Clear MAC table": "Vider la table MAC"
 };
 
 uitranslation.registerLocale(fr_FR);

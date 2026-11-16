@@ -79,6 +79,23 @@ var Connectable = function(c_owner, macmode, ipmode, limitbroadcast, performNAT)
         gateways.load(data.gateways ? data.gateways : null);
     };
 
+    // Table d'adresses MAC apprises (commutateur) : [{mac, port}]
+    this.getLearnedMACs = function()
+    {
+        var result = [];
+        var keys = Object.keys(addressingTable);
+        for (var i = 0; i < keys.length; i++)
+        {
+            result.push({mac: keys[i], port: addressingTable[keys[i]]});
+        }
+        return result;
+    };
+
+    this.clearLearnedMACs = function()
+    {
+        addressingTable = {};
+    };
+
     this.updateAddressing = function(mac, ifacepos)
     {
         addressingTable[mac] = ifacepos;

@@ -52,26 +52,64 @@ function checkForUpdates(statusId)
         return;
     }
     setUpdateStatus(statusId, "", escapeHTML(_("Checking...")));
-    var url = "https://api.github.com/repos/" + repo.owner + "/" + repo.name + "/releases/latest";
-    fetch(url, {headers: {"Accept": "application/vnd.github+json"}})
-        .then(function(response)
+    var base = "https://github.com/" + repo.owner + "/" + repo.name;
+    var api = "https://api.github.com/repos/" + repo.owner + "/" + repo.name;
+    var raw = "https://raw.githubusercontent.com/" + repo.owner + "/" + repo.name + "/main/package.json";
+
+    function getJSON(url)
+    {
+        return fetch(url, {headers: {"Accept": "application/vnd.github+json"}}).then(function(response)
         {
             if (!response.ok)
             {
                 throw new Error("HTTP " + response.status);
             }
             return response.json();
-        })
-        .then(function(release)
+        });
+    }
+
+    // 1) dernière release ; 2) à défaut, dernière étiquette (tag) ; 3) à défaut, version du package.json de la branche main
+    var step = getJSON(api + "/releases/latest")
+        .then(function(r) { return {version: String(r.tag_name || ""), link: String(r.html_url || base)}; })
+        .catch(function()
         {
-            var tag = String(release.tag_name || "");
-            if (compareVersions(tag, NetworkSimulator.version) > 0)
+            return getJSON(api + "/tags?per_page=30").then(function(tags)
             {
-                var link = String(release.html_url || "");
-                var msg = escapeHTML(_("New version available:") + " " + tag);
-                if (link.indexOf("https://github.com/") === 0)
+                var best = null;
+                for (var i = 0; i < tags.length; i++)
                 {
-                    msg += " &mdash; <a href='" + escapeHTML(link) + "' target='_blank' rel='noopener noreferrer'>" + escapeHTML(_("Download")) + "</a>";
+                    if ((best === null) || (compareVersions(tags[i].name, best) > 0))
+                    {
+                        best = String(tags[i].name);
+                    }
+                }
+                if (best === null)
+                {
+                    throw new Error("no tag");
+                }
+                return {version: best, link: base + "/releases"};
+            });
+        })
+        .catch(function()
+        {
+            return getJSON(raw).then(function(pkg)
+            {
+                return {version: String(pkg.version || ""), link: base};
+            });
+        });
+
+    step.then(function(latest)
+        {
+            if (!/^v?\d+(\.\d+)*$/.test(latest.version))
+            {
+                throw new Error("bad version");
+            }
+            if (compareVersions(latest.version, NetworkSimulator.version) > 0)
+            {
+                var msg = escapeHTML(_("New version available:") + " " + latest.version);
+                if (latest.link.indexOf("https://github.com/") === 0)
+                {
+                    msg += " &mdash; <a href='" + escapeHTML(latest.link) + "' target='_blank' rel='noopener noreferrer'>" + escapeHTML(_("Download")) + "</a>";
                 }
                 setUpdateStatus(statusId, "warn", msg);
             }

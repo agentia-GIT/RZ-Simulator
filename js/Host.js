@@ -446,6 +446,10 @@ var Host = function(type, ports)
         {
             result = (i === 0) ? "LAN (Ethernet)" : "Wi-Fi " + i;
         }
+        else if (type === "switch")
+        {
+            result = _("Port ") + (i + 1);
+        }
         
         return result;
     };
@@ -533,6 +537,10 @@ var Host = function(type, ports)
         if (type === "router")
         {
             menu.addEntry("img/v3i/edit.svg", "Edit NAT table", "editNATTable(" + _self.id + ");");
+        }
+        if (type === "switch")
+        {
+            menu.addEntry("img/v3i/inspect.svg", "Ports and MAC table", "showSwitchTable(" + _self.id + ");");
         }
         if (type === "accesspoint")
         {
@@ -661,6 +669,20 @@ var Host = function(type, ports)
             return result;
         }
         
+        if (type === "switch")
+        {
+            var up = 0;
+            for (var p = 0; p < connectable.getConnectorNumber(); p++)
+            {
+                if (connectable.getConnector(p).isConnected() && !connectable.getConnector(p).isDisabled())
+                {
+                    up++;
+                }
+            }
+            result += "\n" + connectable.getConnectorNumber() + " " + _("ports") + " \u00b7 " + up + " " + _("active");
+            return result;
+        }
+
         if (connectable.getIpMode() === IPMODE_UNIQUE)
         {
             for (var i = 0; i < connectable.getConnectorNumber();i++)

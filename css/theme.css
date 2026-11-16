@@ -55,6 +55,7 @@ a{color:var(--ns-primary);}
 .ns-window-content p{margin:6px 0;}
 .ns-window-content label{display:inline-block;min-width:9.5em;margin-right:10px;text-align:right;font-weight:700;color:var(--ns-primary-dark);}
 .ns-window-content input[type="text"],.ns-window-content input[type="password"],.ns-window-content input[type="number"],.ns-window-content select{box-sizing:border-box;width:15em;max-width:100%;margin:4px 0;padding:6px 8px;font-size:1em;border:1px solid #b9c3cb;}
+.ns-window-content label.ns-plain{display:inline-block;min-width:0;margin:0;text-align:left;font-weight:400;color:inherit;}
 .ns-window-content label.ns-stack{display:block;min-width:0;margin:8px 0 2px;text-align:left;}
 .ns-window-content label.ns-stack + input[type="text"],.ns-window-content label.ns-stack + select{width:100%;margin-top:0;}
 .ns-window-content textarea{box-sizing:border-box;width:100%;min-height:6em;padding:6px 8px;font-size:1em;border:1px solid #b9c3cb;}
@@ -102,3 +103,11 @@ a{color:var(--ns-primary);}
 .ns-status{font-size:.85em;min-height:1.2em;}
 .ns-status.ns-ok{color:#1e7e34;font-weight:600;}
 .ns-status.ns-warn{color:#b35c00;font-weight:600;}
+
+/* ---------- Switch : ports ---------- */
+.ns-ports{display:grid;grid-template-columns:repeat(auto-fill,minmax(34px,1fr));gap:4px;max-width:560px;margin:6px 0;}
+.ns-port{display:block;box-sizing:border-box;padding:6px 0;text-align:center;font-weight:700;text-decoration:none;color:#000001;background:var(--ns-grey);border:1px solid #b9c3cb;}
+.ns-port.ns-port-up{background:#2e7d32;border-color:#1b5e20;color:#fff;}
+.ns-port.ns-port-off{background:#b3261e;border-color:#8c1d18;color:#fff;}
+.ns-port:hover{outline:2px solid var(--ns-accent);}
+.ns-hint{margin:2px 0 6px;font-size:.85em;color:#555;}

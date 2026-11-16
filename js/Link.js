@@ -20,14 +20,18 @@ function selectLinkConnectors(id1, id2)
 function getElementConnectorsSelectables(host) 
 {
     var result = "";
-    for (var i = 0; i < host.getConnectable().getConnectorNumber(); i++) 
+    var n = host.getConnectable().getConnectorNumber();
+    // Beaucoup de ports (switch 24/48) : affichage en colonnes pour rester compact
+    var cols = (n > 24) ? 4 : ((n > 8) ? 3 : 1);
+    result += "<div style='display:grid;grid-template-columns:repeat(" + cols + ",auto);gap:3px 16px;text-align:left;'>";
+    for (var i = 0; i < n; i++) 
     {
         var connector = host.getConnectable().getConnector(i);
         var disabledTxt = connector.isConnected() ? " disabled='disabled' " : "";
-        result += "<input type='radio' name='link_host_" + host.id + "' value='" + i + "' id='link_host_" + host.id + "_" + i + "' " + disabledTxt + "/>";
-        result += " " + host.getConnectorDesc(i);
-        result += "<br/>";
+        result += "<label class='ns-plain' style='white-space:nowrap;'><input type='radio' name='link_host_" + host.id + "' value='" + i + "' id='link_host_" + host.id + "_" + i + "' " + disabledTxt + "/>";
+        result += " " + escapeHTML(host.getConnectorDesc(i)) + "</label>";
     }
+    result += "</div>";
     return result;
 }
 
