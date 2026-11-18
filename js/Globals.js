@@ -136,7 +136,7 @@ function setDarkMode(on)
 var NetworkSimulator = {
   initialdata: null,
   verbose:false,
-  version: "1.6.0",
+  version: "1.7.0",
   // Dépôt GitHub utilisé par « Vérifier les mises à jour » (menu À propos).
   // Format : "https://github.com/UTILISATEUR/DEPOT". Si la valeur est vide, le bouton
   // indique simplement que le lien n'est pas configuré (aucune requête réseau).

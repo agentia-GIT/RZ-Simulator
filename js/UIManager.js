@@ -186,6 +186,7 @@ var UIManager = function()
     var elemRect = null;
     var move_X = 0;
     var move_Y = 0;
+    var dragMoved = false;
 
     function switchMainMenu(params)
     {
@@ -206,6 +207,7 @@ var UIManager = function()
         canvas.addEventListener("mousedown", mouseDownEvent, false);
         canvas.addEventListener("mouseup", mouseUpEvent, false);
         canvas.addEventListener("mousemove", mouseMoveEvent, false);
+        canvas.addEventListener("contextmenu", contextMenuEvent, false);
         var bbox = canvas.getBoundingClientRect();
 
         createHeader();
@@ -317,6 +319,11 @@ var UIManager = function()
 
     function mouseDownEvent(event)
     {
+        if (event.button !== 0)
+        {
+            return;
+        }
+        dragMoved = false;
         var canvas = document.getElementById("simcanvas");
         // THANK_YOU: http://www.informit.com/articles/article.aspx?p=1903884&seqNum=6
         var bbox = canvas.getBoundingClientRect();
@@ -329,6 +336,10 @@ var UIManager = function()
 
     function mouseUpEvent(event)
     {
+        if (event.button !== 0)
+        {
+            return;
+        }
         var canvas = document.getElementById("simcanvas");
         // THANK_YOU: http://www.informit.com/articles/article.aspx?p=1903884&seqNum=6
         var bbox = canvas.getBoundingClientRect();
@@ -367,6 +378,45 @@ var UIManager = function()
         }
 
         dispatchEvent(canvas_x, canvas_y, ACTION_MOUSE_MOVE);
+    }
+
+    // Clic droit sur un équipement ou un lien : il est sélectionné et son menu (configuration et options)
+    // s'ouvre à l'endroit du clic.
+    function contextMenuEvent(event)
+    {
+        var canvas = document.getElementById("simcanvas");
+        var bbox = canvas.getBoundingClientRect();
+        var z = network.getZoom();
+        var X = (event.clientX - bbox.left) * (canvas.width / bbox.width) / z;
+        var Y = (event.clientY - bbox.top) * (canvas.height / bbox.height) / z;
+        var hit = detectClick(X, Y);
+        if ((hit === null) || (state === STATE_CREATING_LINK))
+        {
+            return;
+        }
+        var obj = hit.getObject();
+        var isHost = obj instanceof Drawable;
+        if (!isHost && !(obj instanceof Link))
+        {
+            return;
+        }
+        event.preventDefault();
+        if (isHost && (multiselect !== null))
+        {
+            multiselect.clear();
+        }
+        // Sélection comme un clic gauche, puis ouverture du menu par sa poignée
+        _self.click(X, Y);
+        if ((elemRect !== null) && (network.getSelected() !== null))
+        {
+            var menu = network.getSelected().getMenu();
+            if (menu !== null)
+            {
+                _self.click(elemRect.X + 3, elemRect.Y + 3);
+                menu.setPos(X, Y);
+                menu.clampToViewport();
+            }
+        }
     }
 
     function hideAllMenus()
@@ -583,10 +633,18 @@ var UIManager = function()
                 switch (action)
                 {
                     case ACTION_MOUSE_UP:
+                        // Objet lâché dans le cadre d'un autre groupe : il prend le nom de ce groupe
+                        if (dragMoved && (network.getSelected() instanceof Host))
+                        {
+                            network.dropIntoGroups([network.getSelected()]);
+                        }
+                        dragMoved = false;
                         state = STATE_ELEMENT_SELECTED_MOUSE_UP;
                         break;
                     case ACTION_MOUSE_MOVE:
                         network.getSelected().getDrawable().setPosition(Math.max(0, X - click_offset_x), Math.max(0, Y - click_offset_y));
+                        dragMoved = true;
+                        network.setDragging([network.getSelected()]);
                         break;
                 }
                 break;

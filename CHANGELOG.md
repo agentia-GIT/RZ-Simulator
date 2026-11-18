@@ -4,6 +4,12 @@ La version (`NetworkSimulator.version` dans `js/Globals.js` et `package.json`) e
 modification ; le bouton **À propos → Vérifier les mises à jour** la compare à la dernière *release* du dépôt
 https://github.com/agentia-GIT/RZ-Simulator.
 
+## 1.7.0
+- **Changer un objet de groupe** : en glissant un objet (ou une sélection) dans le cadre d'un autre groupe, il prend le nom de ce groupe. Le cadre d'accueil est mis en évidence pendant le déplacement ; un simple clic ne change rien.
+- **Borne Wi-Fi : adressage du LAN** : adresse IP de gestion (IP, masque, DNS, passerelles) modifiable via « Modifier les infos IP - LAN », affichée sur le libellé (LAN : …) et sauvegardée. La borne répond au ping (filaire et Wi-Fi) et reste un pont transparent même si son adresse est dans un autre réseau. Les anciens fichiers se chargent sans adresse.
+- **Clic droit** sur un équipement ou un lien : il est sélectionné et son menu de configuration et d'options s'ouvre au niveau du curseur.
+- Les menus d'objets s'affichent au bon endroit quand le menu principal est épinglé.
+
 ## 1.6.0
 - **Multi-sélection** : lasso à la souris dans l'espace vide, Ctrl/Maj + clic pour ajouter ou retirer un équipement, Ctrl + A pour tout sélectionner ; l'ensemble se déplace d'un seul geste (liens et libellés suivent).
 - **Groupes** : un clic sur l'étiquette d'un groupe sélectionne tous ses objets ; la faire glisser déplace tout le groupe.

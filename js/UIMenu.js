@@ -145,8 +145,31 @@ var UIMenu = function(description, X,Y, fixed)
         {
             k = network.getZoom() / (window.devicePixelRatio || 1);
         }
-        X = cX * k;
+        // Le canevas peut être décalé par le menu épinglé
+        var canvas = document.getElementById("simcanvas");
+        var left = (canvas !== null) ? (canvas.getBoundingClientRect().left + getPageScrollX()) : 0;
+        X = left + cX * k;
         Y = cY * k;
+    };
+
+    // Garde le menu entièrement visible dans la fenêtre (utile pour un menu ouvert au clic droit)
+    this.clampToViewport = function()
+    {
+        var div = document.getElementById(id);
+        if (div === null)
+        {
+            return;
+        }
+        var w = div.offsetWidth;
+        var h = div.offsetHeight;
+        var minX = getPageScrollX() + 4;
+        var minY = getPageScrollY() + 60;
+        var maxX = getPageScrollX() + document.documentElement.clientWidth - w - 4;
+        var maxY = getPageScrollY() + document.documentElement.clientHeight - h - 4;
+        var nx = Math.max(minX, Math.min(X, maxX));
+        var ny = Math.max(minY, Math.min(Y, Math.max(minY, maxY)));
+        div.style.left = nx + "px";
+        div.style.top = ny + "px";
     };
 
     this.setDescription = function(desc)

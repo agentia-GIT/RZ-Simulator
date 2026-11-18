@@ -21,6 +21,7 @@ var MultiSelect = function()
     var starts = [];
     var moved = false;
     var clickHost = null;
+    var fromLabel = false;
     var clipboard = null;
     var pasteCount = 0;
     var _self = this;
@@ -93,8 +94,9 @@ var MultiSelect = function()
         }
     }
 
-    function startMove(pt, ev)
+    function startMove(pt, ev, label)
     {
+        fromLabel = (label === true);
         mode = "move";
         startPt = pt;
         startClient = {x: ev.clientX, y: ev.clientY};
@@ -138,7 +140,7 @@ var MultiSelect = function()
             }
             setSelection(members);
             clickHost = null;
-            startMove(pt, ev);
+            startMove(pt, ev, true);
             ev.preventDefault();
             ev.stopPropagation();
             return;
@@ -221,6 +223,7 @@ var MultiSelect = function()
                 return;
             }
             moved = true;
+            network.setDragging(selection);
             autoScroll(ev);
             var dx = pt.x - startPt.x;
             var dy = pt.y - startPt.y;
@@ -273,6 +276,13 @@ var MultiSelect = function()
         var wasMode = mode;
         mode = null;
         band = null;
+        network.setDragging(null);
+        // Objets lâchés dans le cadre d'un autre groupe : ils en prennent le nom (pas pour le déplacement
+        // d'un groupe entier par son étiquette)
+        if ((wasMode === "move") && moved && !fromLabel)
+        {
+            network.dropIntoGroups(selection.slice());
+        }
         if ((wasMode === "move") && !moved && (clickHost !== null) && !(ev.ctrlKey || ev.shiftKey || ev.metaKey))
         {
             // Simple clic sur un membre : retour à la sélection habituelle de cet équipement

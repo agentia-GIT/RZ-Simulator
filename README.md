@@ -1,5 +1,10 @@
 # Network Simulator (Education Network Simulator)
 
+## Version 1.7 — groupes, adressage de la borne Wi-Fi, clic droit
+- Glisser un objet dans le cadre d'un autre groupe le fait changer de groupe.
+- La borne Wi-Fi a une adresse IP de gestion sur son LAN (ping, passerelle, DNS).
+- Clic droit sur un objet ou un lien : menu de configuration et d'options.
+
 ## Version 1.6 — multi-sélection, copier/coller, menu épinglable, mode sombre
 - Lasso à la souris, Ctrl/Maj + clic, Ctrl + A ; déplacement de l'ensemble ; clic/glisser sur l'étiquette d'un groupe pour le déplacer en bloc.
 - Raccourcis : Ctrl + C / X / V / D, Suppr, Échap.

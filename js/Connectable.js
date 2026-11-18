@@ -186,7 +186,10 @@ var Connectable = function(c_owner, macmode, ipmode, limitbroadcast, performNAT)
                       {
                           // Si el conector no tiene IP, o es de la misma subred que la ip solicitada...
                           var nextip = c.getIPInfo();
-                          if ((nextip === null) || nextip.sameNetwork(ip))
+                          // Un switch ou une borne Wi-Fi est un pont : il laisse passer la recherche ARP
+                          // même si son adresse de gestion est dans un autre réseau
+                          var bridge = c.getConnectable().getOwner().getType();
+                          if ((nextip === null) || (bridge === "switch") || (bridge === "accesspoint") || nextip.sameNetwork(ip))
                           {
                               result = c.whoHas(ip);
                               if (result !== null)
@@ -285,31 +288,38 @@ var Connectable = function(c_owner, macmode, ipmode, limitbroadcast, performNAT)
 
     this.getMAC = function(pos)
     {
-        var result = null;
-        if ((pos >= 0) && (pos < macaddresses.length))
+        // MAC partagée (switch, borne) : la même pour tous les ports
+        if ((macmode === MACMODE_SHARED) && (pos >= 0) && (pos < connectors.length))
         {
-            if (macmode === MACMODE_SHARED)
-            {
-                pos = 0;
-            }
-            result = macaddresses[pos];
+            pos = 0;
         }
-        return result;
-    }
+        return ((pos >= 0) && (pos < macaddresses.length)) ? macaddresses[pos] : null;
+    };
 
     this.getIPInfo = function(pos)
     {
         var result = null;
+        // Adresse partagée : tous les ports utilisent la même (on teste donc après le remplacement)
+        if ((ipmode === IPMODE_SHARED) && (pos >= 0) && (pos < connectors.length))
+        {
+            pos = 0;
+        }
         if ((pos >= 0) && (pos < ipinfos.length))
         {
-            if (ipmode === IPMODE_SHARED)
-            {
-                pos = 0;
-            }
             result = ipinfos[pos];
         }
         return result;
-    }
+    };
+
+    // Compatibilité : passe un équipement chargé depuis un ancien fichier en adresse IP partagée
+    this.enableSharedIP = function()
+    {
+        ipmode = IPMODE_SHARED;
+        if (ipinfos.length === 0)
+        {
+            addNewIPInfo();
+        }
+    };
 
     this.getFirstFreeConnector = function()
     {

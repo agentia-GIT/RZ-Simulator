@@ -794,60 +794,129 @@ var Network = function(imgs, context, w, h)
         return created;
     };
 
-    function renderGroups(ctx) 
+    var GROUP_PAD = 14;      // marge entre les objets (et leur libellé) et le cadre
+
+    // Cadres des groupes {nom: {fx, fy, fw, fh}}, en ignorant éventuellement des équipements (exclude)
+    function computeGroupFrames(ctx, exclude)
     {
-        groupLabels = [];
         var groups = {};
         var keys = Object.keys(elements);
         for (var i = 0; i < keys.length; i++) 
         {
             var host = elements[keys[i]];
-            if (host.getGroup() !== null) 
+            if ((host.getGroup() !== null) && (!exclude || (exclude.indexOf(host) < 0)))
             {
-                if (!(host.getGroup() in groups)) 
+                var data = groups[host.getGroup()];
+                if (!data)
                 {
-                    var data = {};
-                    data.minx = 1000000;
-                    data.miny = 1000000;
-                    data.maxx = 0;
-                    data.maxy = 0;
-                    
+                    data = {minx: 1000000, miny: 1000000, maxx: 0, maxy: 0};
                     groups[host.getGroup()] = data;
                 }
-                var data = groups[host.getGroup()];
                 var rect = host.getDrawable().getBounds(ctx);
-                if (data.minx > rect.x) 
+                data.minx = Math.min(data.minx, rect.x);
+                data.miny = Math.min(data.miny, rect.y);
+                data.maxx = Math.max(data.maxx, rect.x + rect.width);
+                data.maxy = Math.max(data.maxy, rect.y + rect.height);
+            }
+        }
+        var frames = {};
+        var names = Object.keys(groups);
+        for (var g = 0; g < names.length; g++)
+        {
+            var d = groups[names[g]];
+            frames[names[g]] = {fx: d.minx - GROUP_PAD, fy: d.miny - GROUP_PAD, fw: d.maxx - d.minx + 2 * GROUP_PAD, fh: d.maxy - d.miny + 2 * GROUP_PAD};
+        }
+        return frames;
+    }
+
+    // Groupe dont le cadre (calculé sans les équipements déplacés) contient le centre de l'équipement
+    function groupUnder(host, moving)
+    {
+        var frames = computeGroupFrames(ctx, moving);
+        var d = host.getDrawable();
+        var cx = d.getCenterX();
+        var cy = d.getCenterY();
+        var names = Object.keys(frames);
+        var found = null;
+        for (var i = 0; i < names.length; i++)
+        {
+            var f = frames[names[i]];
+            if ((cx >= f.fx) && (cx <= f.fx + f.fw) && (cy >= f.fy) && (cy <= f.fy + f.fh))
+            {
+                found = names[i];
+            }
+        }
+        return found;
+    }
+
+    var draggingList = null;
+
+    // Équipements en cours de déplacement (pour surligner le groupe d'accueil) ou null
+    this.setDragging = function(list)
+    {
+        draggingList = (list && list.length > 0) ? list : null;
+    };
+
+    // Fin d'un déplacement : chaque équipement lâché dans le cadre d'un autre groupe en prend le nom.
+    // Retourne le nombre d'équipements dont le groupe a changé.
+    this.dropIntoGroups = function(list)
+    {
+        draggingList = null;
+        var changes = [];
+        for (var i = 0; i < list.length; i++)
+        {
+            var g = groupUnder(list[i], list);
+            if ((g !== null) && (g !== list[i].getGroup()))
+            {
+                changes.push([list[i], g]);
+            }
+        }
+        for (var c = 0; c < changes.length; c++)
+        {
+            changes[c][0].setGroup(changes[c][1]);
+        }
+        return changes.length;
+    };
+
+    function renderGroups(ctx) 
+    {
+        groupLabels = [];
+        var frames = computeGroupFrames(ctx, null);
+        var target = {};
+        if (draggingList !== null)
+        {
+            for (var t = 0; t < draggingList.length; t++)
+            {
+                var tg = groupUnder(draggingList[t], draggingList);
+                if ((tg !== null) && (tg !== draggingList[t].getGroup()))
                 {
-                    data.minx = rect.x;
-                }
-                if (data.miny > rect.y) 
-                {
-                    data.miny = rect.y;
-                }
-                if (data.maxx < rect.x + rect.width) 
-                {
-                    data.maxx = rect.x + rect.width;
-                }
-                if (data.maxy < rect.y + rect.height) 
-                {
-                    data.maxy = rect.y + rect.height;
+                    target[tg] = true;
                 }
             }
         }
-        
-        keys = Object.keys(groups);
-        var PAD = 14;      // marge entre les objets (et leur libellé) et le cadre
+        var keys = Object.keys(frames);
         var GAP = 8;       // espace entre le cadre et le nom du groupe
         for (var i = 0; i < keys.length; i++) 
         {
-            var data = groups[keys[i]];
-            var fx = data.minx - PAD;
-            var fy = data.miny - PAD;
-            var fw = data.maxx - data.minx + 2 * PAD;
-            var fh = data.maxy - data.miny + 2 * PAD;
+            var fr = frames[keys[i]];
+            var fx = fr.fx;
+            var fy = fr.fy;
+            var fw = fr.fw;
+            var fh = fr.fh;
             ctx.save();
-            ctx.strokeStyle = NSTheme.frame;
-            ctx.lineWidth = 2;
+            if (target[keys[i]])
+            {
+                // Groupe d'accueil : le cadre est mis en évidence pendant le déplacement
+                ctx.fillStyle = "rgba(0,162,252,0.12)";
+                ctx.fillRect(fx, fy, fw, fh);
+                ctx.strokeStyle = "#00a2fc";
+                ctx.lineWidth = 3;
+            }
+            else
+            {
+                ctx.strokeStyle = NSTheme.frame;
+                ctx.lineWidth = 2;
+            }
             ctx.setLineDash([8, 6]);
             ctx.strokeRect(fx, fy, fw, fh);
             ctx.setLineDash([]);

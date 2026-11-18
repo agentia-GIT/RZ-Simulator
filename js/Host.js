@@ -352,6 +352,11 @@ var Host = function(type, ports)
             _self.setWifi(data.wifi);
         }
         connectable.load(data.connectable);
+        if (type === "accesspoint")
+        {
+            // Fichiers créés avant la v1.7 : la borne n'avait pas d'adresse IP
+            connectable.enableSharedIP();
+        }
         if (data.apps) 
         {
             for (var i = 0; i < data.apps.length; i++) 
@@ -395,9 +400,12 @@ var Host = function(type, ports)
                 connectable = new Connectable(_self, MACMODE_UNIQUE, IPMODE_UNIQUE, true, true);
                 break;
             case "switch":
-            case "accesspoint":
-                // Une borne Wi-Fi se comporte comme un pont de niveau 2 (comme un switch)
                 connectable = new Connectable(_self, MACMODE_SHARED, IPMODE_NOIP, false, false);
+                break;
+            case "accesspoint":
+                // Une borne Wi-Fi est un pont de niveau 2 (comme un switch) avec une adresse IP de
+                // gestion sur son LAN : une seule adresse partagée par tous ses ports
+                connectable = new Connectable(_self, MACMODE_SHARED, IPMODE_SHARED, false, false);
                 break;
             default:
                 connectable = new Connectable(_self, MACMODE_UNIQUE, IPMODE_UNIQUE, true, false);
@@ -544,6 +552,7 @@ var Host = function(type, ports)
         }
         if (type === "accesspoint")
         {
+            menu.addEntry("img/v3i/edit.svg", "Edit IP Info - LAN", "editIpInfo(" + _self.id + ",0);");
             menu.addEntry("img/v3i/wifi.svg", "Wi-Fi settings", "editWifiSettings(" + _self.id + ");");
             menu.addEntry("img/v3i/inspect.svg", "Connected stations", "showWifiStations(" + _self.id + ");");
         }
@@ -662,6 +671,7 @@ var Host = function(type, ports)
             result += "\n" + (wifi.enabled ? "SSID : " + wifi.ssid : _("Wi-Fi off"));
             result += "\n" + channelinfo + " \u00b7 " + (wifi.security === "open" ? _("Open") : wifi.security.toUpperCase());
             result += "\n" + _("Stations:") + " " + this.getStations().length + "/" + (connectable.getConnectorNumber() - 1);
+            result += "\nLAN : " + ((connectable.getIPInfo(0).getIPv4() === null) ? "-" : connectable.getIPInfo(0).getIPv4());
             if (wifi.enabled && (network !== null) && (network.getChannelConflicts(this).length > 0))
             {
                 result += "\n\u26a0 " + _("Channel interference");
