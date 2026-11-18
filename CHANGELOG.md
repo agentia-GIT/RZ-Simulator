@@ -4,6 +4,15 @@ La version (`NetworkSimulator.version` dans `js/Globals.js` et `package.json`) e
 modification ; le bouton **À propos → Vérifier les mises à jour** la compare à la dernière *release* du dépôt
 https://github.com/agentia-GIT/RZ-Simulator.
 
+## 1.6.0
+- **Multi-sélection** : lasso à la souris dans l'espace vide, Ctrl/Maj + clic pour ajouter ou retirer un équipement, Ctrl + A pour tout sélectionner ; l'ensemble se déplace d'un seul geste (liens et libellés suivent).
+- **Groupes** : un clic sur l'étiquette d'un groupe sélectionne tous ses objets ; la faire glisser déplace tout le groupe.
+- **Copier / coller au clavier** : Ctrl + C, Ctrl + X, Ctrl + V, Ctrl + D (dupliquer), Suppr, Échap. Les copies reçoivent de nouveaux identifiants et de nouvelles adresses MAC (IP statiques retirées pour éviter les doublons) ; les liens entre objets copiés sont conservés.
+- **Menu épinglable** : bouton « épingle » dans le titre ; le menu reste ouvert, la zone de travail et les contrôles se décalent à droite ; l'état est mémorisé. Le bouton burger le désépingle.
+- **Glisser-déposer** des objets de la bibliothèque (menu) directement sur la zone de travail ; le clic simple ajoute toujours l'objet.
+- **Mode sombre** : interrupteur à côté du zoom (interface, canevas, libellés) ; l'état est mémorisé.
+- Textes traduits (français, espagnol, basque).
+
 ## 1.5.3
 - Fenêtre de sauvegarde : le bouton « Parcourir… » est retiré (il n'est pas disponible dans Firefox) ; « Sauvegarder » télécharge le fichier, et le navigateur propose le dossier s'il est réglé sur « Toujours demander où enregistrer les fichiers ».
 

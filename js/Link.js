@@ -214,9 +214,9 @@ var Link = function(c1, c2)
         {
             width = Math.max(width, ctx.measureText(parts[k]).width);
         }
-        ctx.fillStyle = "rgba(255,255,255,0.88)";
+        ctx.fillStyle = NSTheme.msgBg;
         ctx.fillRect(-2, top - 1, width + 6, parts.length * 15 + 3);
-        ctx.fillStyle = "#000001";
+        ctx.fillStyle = NSTheme.labelText;
         for (var i = 0; i < parts.length; i++)
         {
             ctx.fillText(parts[i], 1, top + i * 15);
@@ -270,8 +270,8 @@ var Link = function(c1, c2)
     function drawWifiBadge(ctx, x, y)
     {
         ctx.save();
-        ctx.fillStyle = "#ffffff";
-        ctx.strokeStyle = "#00507c";
+        ctx.fillStyle = NSTheme.badgeBg;
+        ctx.strokeStyle = NSTheme.link;
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.arc(x, y, 11, 0, Math.PI * 2);
@@ -298,7 +298,7 @@ var Link = function(c1, c2)
         var vertices = getVertices();
         var wireless = isWireless();
         ctx.lineWidth = selected ? 3 : 2;
-        ctx.strokeStyle = selected ? "#00a2fc" : "#00507c";
+        ctx.strokeStyle = selected ? "#00a2fc" : NSTheme.link;
         if (wireless)
         {
             ctx.setLineDash([7, 6]);

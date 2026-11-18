@@ -79,7 +79,7 @@ var Network = function(imgs, context, w, h)
     function computeWorldSize()
     {
         var dpr = window.devicePixelRatio || 1;
-        var vw = document.documentElement.clientWidth || window.innerWidth;
+        var vw = (document.documentElement.clientWidth || window.innerWidth) - nsLeftInset();
         var vh = document.documentElement.clientHeight || window.innerHeight;
         var needW = 0;
         var needH = 0;
@@ -621,8 +621,182 @@ var Network = function(imgs, context, w, h)
         }
     };
     
+    var groupLabels = [];
+
+    this.invalidateGrid = function()
+    {
+        gridPattern = null;
+    };
+
+    // Étiquette de groupe située sous le point (x, y) (coordonnées du monde) : son nom, ou null
+    this.getGroupLabelAt = function(x, y)
+    {
+        for (var i = groupLabels.length - 1; i >= 0; i--)
+        {
+            var g = groupLabels[i];
+            if ((x >= g.x) && (x <= g.x + g.w) && (y >= g.y) && (y <= g.y + g.h))
+            {
+                return g.name;
+            }
+        }
+        return null;
+    };
+
+    this.getGroupMembers = function(name)
+    {
+        var result = [];
+        var keys = Object.keys(elements);
+        for (var i = 0; i < keys.length; i++)
+        {
+            if (elements[keys[i]].getGroup() === name)
+            {
+                result.push(elements[keys[i]]);
+            }
+        }
+        return result;
+    };
+
+    // Supprime plusieurs équipements (et leurs liens) d'un coup
+    this.removeElements = function(list)
+    {
+        for (var i = 0; i < list.length; i++)
+        {
+            if (elements[list[i].id] === list[i])
+            {
+                if (selected === list[i])
+                {
+                    selected = null;
+                }
+                deleteElement(list[i]);
+                list[i].dispose();
+            }
+        }
+    };
+
+    function randomMAC()
+    {
+        var chars = "0123456789ABCDEF";
+        var mac = "";
+        for (var i = 0; i < 12; i++)
+        {
+            mac += chars.charAt(Math.floor(Math.random() * chars.length));
+            if ((i % 2 === 1) && (i !== 11))
+            {
+                mac += ":";
+            }
+        }
+        return mac;
+    }
+
+    // Copie des équipements : données sérialisées + liens internes à la sélection
+    this.copyElements = function(list)
+    {
+        var result = {elements: [], links: [], minx: 1e9, miny: 1e9};
+        var connectorIds = {};
+        for (var i = 0; i < list.length; i++)
+        {
+            var data = JSON.parse(JSON.stringify(list[i].save()));
+            result.elements.push(data);
+            result.minx = Math.min(result.minx, data.drawable.X);
+            result.miny = Math.min(result.miny, data.drawable.Y);
+            var cons = data.connectable.connectors;
+            for (var c = 0; c < cons.length; c++)
+            {
+                connectorIds[cons[c].id] = true;
+            }
+        }
+        for (var l = 0; l < links.length; l++)
+        {
+            var ld = JSON.parse(JSON.stringify(links[l].save()));
+            if (connectorIds[ld.connector1] && connectorIds[ld.connector2])
+            {
+                result.links.push(ld);
+            }
+        }
+        return result;
+    };
+
+    // Colle une copie : de nouveaux identifiants, adresses MAC aléatoires, IP statiques retirées
+    // (pas de doublon). Retourne les nouveaux équipements.
+    this.pasteElements = function(clip, dx, dy)
+    {
+        var map = {};
+        function nid(old)
+        {
+            if (!(old in map))
+            {
+                map[old] = getNextID();
+            }
+            return map[old];
+        }
+        var created = [];
+        for (var i = 0; i < clip.elements.length; i++)
+        {
+            var e = JSON.parse(JSON.stringify(clip.elements[i]));
+            var oldName = e.type + " " + e.id;
+            e.id = nid(e.id);
+            if (e.name === oldName)
+            {
+                e.name = e.type + " " + e.id;
+            }
+            e.drawable.id = nid(e.drawable.id);
+            e.drawable.X += dx;
+            e.drawable.Y += dy;
+            var con = e.connectable;
+            con.id = nid(con.id);
+            for (var c = 0; c < con.connectors.length; c++)
+            {
+                con.connectors[c].id = nid(con.connectors[c].id);
+            }
+            if (con.trafficManager)
+            {
+                con.trafficManager.id = nid(con.trafficManager.id);
+            }
+            if (con.macaddresses)
+            {
+                for (var m = 0; m < con.macaddresses.length; m++)
+                {
+                    con.macaddresses[m] = randomMAC();
+                }
+            }
+            if (con.ipinfos)
+            {
+                for (var p = 0; p < con.ipinfos.length; p++)
+                {
+                    if (con.ipinfos[p].static)
+                    {
+                        con.ipinfos[p].IPv4 = null;
+                        con.ipinfos[p].static = false;
+                    }
+                }
+            }
+            var element = new Host(e.type, e.ports ? e.ports : (e.type === "router" ? 2 : 1));
+            element.load(e);
+            elements[element.id] = element;
+            created.push(element);
+        }
+        for (var k = 0; k < clip.links.length; k++)
+        {
+            var ld = JSON.parse(JSON.stringify(clip.links[k]));
+            var c1 = _self.findConnector(map[ld.connector1]);
+            var c2 = _self.findConnector(map[ld.connector2]);
+            if ((c1 === null) || (c2 === null))
+            {
+                continue;
+            }
+            ld.id = nid(ld.id);
+            ld.connector1 = map[ld.connector1];
+            ld.connector2 = map[ld.connector2];
+            var link = new Link(c1, c2);
+            link.load(ld);
+            links.push(link);
+        }
+        return created;
+    };
+
     function renderGroups(ctx) 
     {
+        groupLabels = [];
         var groups = {};
         var keys = Object.keys(elements);
         for (var i = 0; i < keys.length; i++) 
@@ -672,7 +846,7 @@ var Network = function(imgs, context, w, h)
             var fw = data.maxx - data.minx + 2 * PAD;
             var fh = data.maxy - data.miny + 2 * PAD;
             ctx.save();
-            ctx.strokeStyle = "rgba(0,80,124,0.7)";
+            ctx.strokeStyle = NSTheme.frame;
             ctx.lineWidth = 2;
             ctx.setLineDash([8, 6]);
             ctx.strokeRect(fx, fy, fw, fh);
@@ -682,11 +856,12 @@ var Network = function(imgs, context, w, h)
             ctx.textBaseline = "bottom";
             var tw = ctx.measureText(keys[i]).width;
             var ty = Math.max(fy - GAP, 22);
-            ctx.fillStyle = "rgba(255,255,255,0.9)";
+            ctx.fillStyle = NSTheme.groupBg;
             ctx.fillRect(fx - 2, ty - 22, tw + 14, 26);
-            ctx.fillStyle = "#00507c";
+            ctx.fillStyle = NSTheme.labelBar;
             ctx.fillRect(fx - 2, ty - 22, 3, 26);
-            ctx.fillStyle = "#003c5d";
+            groupLabels.push({name: keys[i], x: fx - 2, y: ty - 22, w: tw + 14, h: 26});
+            ctx.fillStyle = NSTheme.groupText;
             ctx.fillText(keys[i], fx + 7, ty);
             ctx.restore();
         }
@@ -724,7 +899,7 @@ var Network = function(imgs, context, w, h)
         {
             return null;
         }
-        c.fillStyle = "rgba(0,80,124,0.18)";
+        c.fillStyle = NSTheme.grid;
         c.fillRect(0, 0, 2, 2);
         return ctx.createPattern(tile, "repeat");
     }
@@ -732,7 +907,7 @@ var Network = function(imgs, context, w, h)
     function render() 
     {
         ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.fillStyle = "#E6E6E6";
+        ctx.fillStyle = NSTheme.bg;
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         ctx.scale(zoom, zoom);
         // Quadrillage discret (motif créé une seule fois)
@@ -759,6 +934,8 @@ var Network = function(imgs, context, w, h)
         
         renderGroups(ctx);
         
+        multiselect.prune();
+        multiselect.render(ctx);
         uimanager.render(ctx);
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         uimanager.updateHeader();

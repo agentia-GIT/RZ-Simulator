@@ -82,12 +82,22 @@ var ZoomControls =
 
 // Les deux fenêtres de contrôle sont compactes, fixes à l'écran, de même hauteur, côte à côte
 // et centrées en haut (sauf si l'utilisateur en a déplacé une).
+var DarkControls =
+{
+    darkWindow: null,
+    toggle: function(on)
+    {
+        setDarkMode(on);
+    }
+};
+
 var controlsLayoutBusy = false;
 function positionControlWindows()
 {
     var a = AnimationControls.controlsWindow;
     var z = ZoomControls.zoomWindow;
-    if ((a === null) || (z === null) || controlsLayoutBusy || a.wasMoved() || z.wasMoved())
+    var d = DarkControls.darkWindow;
+    if ((a === null) || (z === null) || (d === null) || controlsLayoutBusy || a.wasMoved() || z.wasMoved() || d.wasMoved())
     {
         return;
     }
@@ -97,11 +107,14 @@ function positionControlWindows()
         var GAP = 10;
         var sa = a.getSize();
         var sz = z.getSize();
-        var total = sa.w + GAP + sz.w;
-        var left = Math.max(4, Math.round((window.innerWidth - total) / 2));
+        var sd = d.getSize();
+        var total = sa.w + GAP + sz.w + GAP + sd.w;
+        var inset = nsLeftInset();
+        var left = Math.max(4 + inset, Math.round(inset + (document.documentElement.clientWidth - inset - total) / 2));
         var top = 64;
         a.setPos(left, top);
         z.setPos(left + sa.w + GAP, top);
+        d.setPos(left + sa.w + GAP + sz.w + GAP, top);
     }
     finally
     {
@@ -132,10 +145,21 @@ function createControlsWindow()
     zc += '<img src="img/v3i/plus.svg" alt="'+_("Zoom in")+'" title="'+_("Zoom in")+'" onclick="ZoomControls.zoomIn();" />';
     z.setControls(zc);
 
+    // Mode sombre : interrupteur à côté du zoom
+    var d = new UIWindow("darkwindow", "Dark mode", 120, 50, false, 1.0);
+    DarkControls.darkWindow = d;
+    d.setFixed(true);
+    d.setCompact(true);
+    d.setMinWidth(0);
+    var dc = '<label class="ns-switch" title="' + _("Dark mode") + '"><input type="checkbox" id="darkswitch" role="switch" aria-label="' + _("Dark mode") + '" onchange="DarkControls.toggle(this.checked);"' + (NSTheme.dark ? ' checked' : '') + ' /><span class="ns-slider"></span></label>';
+    d.setControls(dc);
+
     a.setLayoutHook(positionControlWindows);
     z.setLayoutHook(positionControlWindows);
+    d.setLayoutHook(positionControlWindows);
     a.render();
     z.render();
+    d.render();
     ZoomControls.refresh();
     positionControlWindows();
     window.addEventListener("resize", positionControlWindows);

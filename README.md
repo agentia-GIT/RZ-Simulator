@@ -1,5 +1,11 @@
 # Network Simulator (Education Network Simulator)
 
+## Version 1.6 — multi-sélection, copier/coller, menu épinglable, mode sombre
+- Lasso à la souris, Ctrl/Maj + clic, Ctrl + A ; déplacement de l'ensemble ; clic/glisser sur l'étiquette d'un groupe pour le déplacer en bloc.
+- Raccourcis : Ctrl + C / X / V / D, Suppr, Échap.
+- Menu épinglable (bouton épingle) et glisser-déposer des objets de la bibliothèque sur la zone de travail.
+- Interrupteur du mode sombre à côté du zoom.
+
 ## Version 1.5 — zoom, zone de travail dynamique, sauvegarde avec « Parcourir »
 
 - Boutons de zoom à droite des contrôles d'animation (30 à 300 %), zone de travail qui suit les objets, en-tête et contrôles fixes.

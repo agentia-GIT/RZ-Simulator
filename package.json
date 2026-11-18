@@ -1,6 +1,6 @@
 {
   "name": "network-simulator",
-  "version": "1.5.3",
+  "version": "1.6.0",
   "description": "Education Network Simulator - simulateur de réseau pédagogique (canvas HTML5)",
   "author": "Jorge García Ochoa de Aspuru",
   "license": "GPL-3.0",

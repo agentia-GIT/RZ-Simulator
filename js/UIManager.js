@@ -191,7 +191,8 @@ var UIManager = function()
     {
         if (mainmenu.getVisible())
         {
-            mainmenu.hide();
+            // Le burger ferme aussi un menu épinglé (désépinglage)
+            mainmenu.hide(true);
         }
         else
         {
@@ -209,6 +210,7 @@ var UIManager = function()
 
         createHeader();
         mainmenu = new UIMenu("Menu", 8 + bbox.left, HEADER_HEIGHT, true);
+        mainmenu.setPinnable(true);
 
         // Gestion : sauvegarde et restauration du réseau
         var manage = mainmenu.addSection("Management", "manage");
@@ -219,17 +221,17 @@ var UIManager = function()
 
         // Bibliothèque d'objets : équipements à ajouter au réseau
         var library = mainmenu.addSection("Object library", "library");
-        library.addEntry("img/v3i/computer.svg", "Add Host", 'newElement("host");');
-        library.addEntry("img/v3i/server_dhcp.svg", "Add DHCP server", 'newElement("dhcp");');
-        library.addEntry("img/v3i/server_dns.svg", "Add DNS server", 'newElement("dns");');
-        library.addEntry("img/v3i/server_web.svg", "Add web server", 'newElement("web");');
-        library.addEntry("img/v3i/switch.svg", "Add 8-port switch", 'newElement("switch8");');
-        library.addEntry("img/v3i/switch.svg", "Add 16-port switch", 'newElement("switch16");');
-        library.addEntry("img/v3i/switch.svg", "Add 24-port switch", 'newElement("switch24");');
-        library.addEntry("img/v3i/switch.svg", "Add 48-port switch", 'newElement("switch48");');
-        library.addEntry("img/v3i/router2.svg", "Add router", 'newElement("router");');
-        library.addEntry("img/v3i/printer.svg", "Add network printer", 'newElement("printer");');
-        library.addEntry("img/v3i/accesspoint.svg", "Add Wi-Fi access point", 'newElement("accesspoint");');
+        library.addEntry("img/v3i/computer.svg", "Add Host", 'newElement("host");', false, "host");
+        library.addEntry("img/v3i/server_dhcp.svg", "Add DHCP server", 'newElement("dhcp");', false, "dhcp");
+        library.addEntry("img/v3i/server_dns.svg", "Add DNS server", 'newElement("dns");', false, "dns");
+        library.addEntry("img/v3i/server_web.svg", "Add web server", 'newElement("web");', false, "web");
+        library.addEntry("img/v3i/switch.svg", "Add 8-port switch", 'newElement("switch8");', false, "switch8");
+        library.addEntry("img/v3i/switch.svg", "Add 16-port switch", 'newElement("switch16");', false, "switch16");
+        library.addEntry("img/v3i/switch.svg", "Add 24-port switch", 'newElement("switch24");', false, "switch24");
+        library.addEntry("img/v3i/switch.svg", "Add 48-port switch", 'newElement("switch48");', false, "switch48");
+        library.addEntry("img/v3i/router2.svg", "Add router", 'newElement("router");', false, "router");
+        library.addEntry("img/v3i/printer.svg", "Add network printer", 'newElement("printer");', false, "printer");
+        library.addEntry("img/v3i/accesspoint.svg", "Add Wi-Fi access point", 'newElement("accesspoint");', false, "accesspoint");
 
         // Sélection des langues (la liste est construite à partir des langues enregistrées)
         var languages = mainmenu.addSection("Languages", "language");
@@ -244,10 +246,35 @@ var UIManager = function()
         about.addInfo([["Network Simulator", "v" + NetworkSimulator.version], ["License:", "GPLv3"]]);
         about.addButton("Check for updates", 'checkForUpdates("ns_update_status");', "ns_update_status");
         _self.addMenu(mainmenu);
+        // Menu épinglé lors d'une session précédente : on le rouvre
+        if (mainmenu.loadPinned())
+        {
+            mainmenu.show();
+        }
 
         var rect = new UIRectangle(switchMainMenu, null, mainmenu, BURGER_X, BURGER_Y, BURGER_SIZE, BURGER_SIZE, 10, true);
         _self.addClickable(rect);
     }
+
+    // Élément cliquable sous le point (coordonnées du monde), ou null
+    this.hitTest = function(X, Y)
+    {
+        return detectClick(X, Y);
+    };
+
+    // Annule toute sélection (équipement, lien, menus) et revient à l'état neutre
+    this.deselectAll = function()
+    {
+        hideAllMenus();
+        clearSelection();
+        state = mainmenu.getVisible() ? STATE_MAIN_MENU_VISIBLE : STATE_NEUTRAL;
+    };
+
+    // Libère le canevas d'une zone du monde déjà occupée par le menu épinglé
+    this.getMainMenu = function()
+    {
+        return mainmenu;
+    };
 
     this.addWindow = function(w)
     {
@@ -264,8 +291,19 @@ var UIManager = function()
         delete windows[w.getId()];
     };
 
+    // Simule un clic complet (appui + relâchement) aux coordonnées du monde
+    this.click = function(X, Y)
+    {
+        dispatchEvent(X, Y, ACTION_MOUSE_DOWN);
+        dispatchEvent(X, Y, ACTION_MOUSE_UP);
+    };
+
     this.reset = function()
     {
+        if (multiselect !== null)
+        {
+            multiselect.clear();
+        }
         // Correction : on vide la vraie liste (variable locale) et pas une propriété
         // « this.clickables » sans effet, qui laissait des zones cliquables fantômes
         // après le chargement d'un fichier.
@@ -468,7 +506,7 @@ var UIManager = function()
                                 // Main menu visible
                                 clicked.performAction();
                                 // Nuevo estado
-                                state = STATE_MAIN_MENU_VISIBLE;
+                                state = mainmenu.getVisible() ? STATE_MAIN_MENU_VISIBLE : STATE_NEUTRAL;
                             }
                             else if (clicked.getObject() instanceof Drawable)
                             {
@@ -568,7 +606,7 @@ var UIManager = function()
                                 // Nada seleccionado
                                 clearSelection();
                                 // Nuevo estado
-                                state = STATE_MAIN_MENU_VISIBLE;
+                                state = mainmenu.getVisible() ? STATE_MAIN_MENU_VISIBLE : STATE_NEUTRAL;
                             }
                             else if (clicked.getObject() instanceof Drawable)
                             {
@@ -620,7 +658,7 @@ var UIManager = function()
                                 // Nada seleccionado
                                 clearSelection();
                                 // Nuevo estado
-                                state = STATE_MAIN_MENU_VISIBLE;
+                                state = mainmenu.getVisible() ? STATE_MAIN_MENU_VISIBLE : STATE_NEUTRAL;
                             }
                             else if (clicked.getObject() instanceof Drawable)
                             {
@@ -672,7 +710,7 @@ var UIManager = function()
                                 // Nada seleccionado
                                 clearSelection();
                                 // Nuevo estado
-                                state = STATE_MAIN_MENU_VISIBLE;
+                                state = mainmenu.getVisible() ? STATE_MAIN_MENU_VISIBLE : STATE_NEUTRAL;
                             }
                             else if (clicked.getObject() instanceof Drawable)
                             {
@@ -732,7 +770,7 @@ var UIManager = function()
                                 // Nada seleccionado
                                 clearSelection();
                                 // Nuevo estado
-                                state = STATE_MAIN_MENU_VISIBLE;
+                                state = mainmenu.getVisible() ? STATE_MAIN_MENU_VISIBLE : STATE_NEUTRAL;
                             }
                             else if (clicked.getObject() instanceof Drawable)
                             {

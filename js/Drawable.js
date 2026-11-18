@@ -141,14 +141,14 @@ var Drawable = function(c_owner)
 
         ctx.textBaseline = "top";
         ctx.textAlign = "center";
-        ctx.fillStyle = "rgba(255,255,255,0.92)";
+        ctx.fillStyle = NSTheme.labelBg;
         ctx.fillRect(m.boxX, m.boxY, m.boxW, m.boxH);
-        ctx.fillStyle = "#00507c";
+        ctx.fillStyle = NSTheme.labelBar;
         ctx.fillRect(m.boxX, m.boxY, 3, m.boxH);
         for (var j = 0; j < parts.length; j++)
         {
             ctx.font = (j === 0) ? NAME_FONT : LINE_FONT;
-            ctx.fillStyle = (j === 0) ? "#003c5d" : "#000001";
+            ctx.fillStyle = (j === 0) ? NSTheme.labelName : NSTheme.labelText;
             ctx.fillText(parts[j], m.cx + 1, m.top + 2 + j * LINE_H);
         }
         ctx.textAlign = "left";

@@ -43,6 +43,7 @@ var DEBUG = false;
 var network = null;
 var images = null;
 var uimanager = null;
+var multiselect = null;
 
 var lastuseddinamycport = 1024;
 var lastusedid = 0;
@@ -87,10 +88,55 @@ function getNextID()
   return ++lastusedid;
 }
 
+// Palette de dessin du canevas (clair par défaut, remplacée en mode sombre)
+var NSTheme = {
+  dark: false,
+  bg: "#E6E6E6",
+  grid: "rgba(0,80,124,0.18)",
+  labelBg: "rgba(255,255,255,0.92)",
+  labelBar: "#00507c",
+  labelName: "#003c5d",
+  labelText: "#000001",
+  msgBg: "rgba(255,255,255,0.88)",
+  frame: "rgba(0,80,124,0.7)",
+  groupBg: "rgba(255,255,255,0.9)",
+  groupText: "#003c5d",
+  link: "#00507c",
+  badgeBg: "#ffffff"
+};
+
+var NS_DARK_KEY = "networksimulator.dark";
+
+function setDarkMode(on)
+{
+  on = (on === true);
+  NSTheme.dark = on;
+  NSTheme.bg = on ? "#14202b" : "#E6E6E6";
+  NSTheme.grid = on ? "rgba(120,190,235,0.22)" : "rgba(0,80,124,0.18)";
+  NSTheme.labelBg = on ? "rgba(16,30,42,0.92)" : "rgba(255,255,255,0.92)";
+  NSTheme.labelBar = on ? "#00a2fc" : "#00507c";
+  NSTheme.labelName = on ? "#9fd8ff" : "#003c5d";
+  NSTheme.labelText = on ? "#f1f5f8" : "#000001";
+  NSTheme.msgBg = on ? "rgba(16,30,42,0.88)" : "rgba(255,255,255,0.88)";
+  NSTheme.frame = on ? "rgba(120,190,235,0.8)" : "rgba(0,80,124,0.7)";
+  NSTheme.groupBg = on ? "rgba(16,30,42,0.9)" : "rgba(255,255,255,0.9)";
+  NSTheme.groupText = on ? "#9fd8ff" : "#003c5d";
+  NSTheme.link = on ? "#6cc4f5" : "#00507c";
+  NSTheme.badgeBg = on ? "#14202b" : "#ffffff";
+  if (document.body)
+  {
+    if (on) { document.body.classList.add("ns-dark"); } else { document.body.classList.remove("ns-dark"); }
+  }
+  try { window.localStorage.setItem(NS_DARK_KEY, on ? "1" : "0"); } catch (e) {}
+  if (typeof network !== "undefined" && network !== null) { network.invalidateGrid(); }
+  var box = document.getElementById("darkswitch");
+  if (box !== null) { box.checked = on; }
+}
+
 var NetworkSimulator = {
   initialdata: null,
   verbose:false,
-  version: "1.5.3",
+  version: "1.6.0",
   // Dépôt GitHub utilisé par « Vérifier les mises à jour » (menu À propos).
   // Format : "https://github.com/UTILISATEUR/DEPOT". Si la valeur est vide, le bouton
   // indique simplement que le lien n'est pas configuré (aucune requête réseau).

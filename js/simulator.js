@@ -141,46 +141,54 @@ function getSpawnPoint()
     return {x: x, y: y};
 }
 
-function newElement(type) 
+function newElement(type, pos) 
 {
-    var p = getSpawnPoint();
+    var p = (pos && (typeof pos.x === "number")) ? pos : getSpawnPoint();
+    var id = null;
     switch (type) 
     {
         case "host":
-            network.createComputer(p.x, p.y);
+            id = network.createComputer(p.x, p.y);
             break;
         case "dns":
-            network.createDNSServer(p.x, p.y);
+            id = network.createDNSServer(p.x, p.y);
             break;
         case "dhcp":
-            network.createDHCPServer(p.x, p.y);
+            id = network.createDHCPServer(p.x, p.y);
             break;
         case "web":
-            network.createHTTPServer(p.x, p.y);
+            id = network.createHTTPServer(p.x, p.y);
             break;
         case "switch":
         case "switch8":
-            network.createSwitch(p.x, p.y, 8);
+            id = network.createSwitch(p.x, p.y, 8);
             break;
         case "switch16":
-            network.createSwitch(p.x, p.y, 16);
+            id = network.createSwitch(p.x, p.y, 16);
             break;
         case "switch24":
-            network.createSwitch(p.x, p.y, 24);
+            id = network.createSwitch(p.x, p.y, 24);
             break;
         case "switch48":
-            network.createSwitch(p.x, p.y, 48);
+            id = network.createSwitch(p.x, p.y, 48);
             break;
         case "router":
-            network.createRouter(p.x, p.y);
+            id = network.createRouter(p.x, p.y);
             break;
         case "printer":
-            network.createPrinter(p.x, p.y);
+            id = network.createPrinter(p.x, p.y);
             break;
         case "accesspoint":
-            network.createAccessPoint(p.x, p.y);
+            id = network.createAccessPoint(p.x, p.y);
             break;
     }
+    // Déposé à la souris : l'objet est centré sous le pointeur
+    if ((id !== null) && pos && (typeof pos.x === "number"))
+    {
+        var d = network.getElement(id).getDrawable();
+        d.setPosition(Math.max(0, pos.x - (d.getCenterX() - d.getX())), Math.max(0, pos.y - (d.getCenterY() - d.getY())));
+    }
+    return id;
 }
 
 function simulator(imgs) 
@@ -212,6 +220,9 @@ function simulator(imgs)
         document.fonts.load("italic 400 12px 'Open Sans'");
     }
 
+    // Mode sombre mémorisé
+    try { setDarkMode(window.localStorage.getItem(NS_DARK_KEY) === "1"); } catch (e) { setDarkMode(false); }
+    multiselect = new MultiSelect();
     uimanager = new UIManager();
 
     network = new Network(images, ctx, W, H);
@@ -247,5 +258,6 @@ function simulator(imgs)
     }, {passive: false});
 
     createControlsWindow();
+    multiselect.init();
 }
 
